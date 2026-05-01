@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-primary: #118f5b;
+  --color-highlight: #ff6b15;
+  --color-screen: #e0e0e0;
+  --color-surface: #ffffff;
+  --color-dark: #000000;
+
+  /* Border Radius */
+  --radius-card: 3rem;
+}
+
+/* Custom utility to hide scrollbars globally for ScrollArea components */
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
