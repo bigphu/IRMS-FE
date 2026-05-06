@@ -2,7 +2,9 @@ import { useState, useMemo, useEffect } from "react";
 import { Flame, Pizza, UtensilsCrossed, Salad, List } from "lucide-react";
 
 import Navbar, { type NavItem } from "@/components/layout/Navbar";
-import { ScrollArea } from "@/components";
+import { ScrollArea, Button } from "@/components";
+import { useAuth } from "@/hooks";
+import { useNavigate } from "react-router-dom";
 import { KDSTicket } from "./components/KDSTicket";
 import { useKDSQuery } from "@/hooks/useKDSQuery";
 import { useMenuContext } from "@/contexts/MenuContext";
@@ -52,6 +54,17 @@ export const KDSPage = () => {
     (currentTime - new Date(o.createdAt).getTime()) / 60000 >= 20
   ).length;
 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
+
   return (
     <div className="bg-[#f8f9fa] flex h-screen w-screen overflow-hidden">
       
@@ -86,6 +99,11 @@ export const KDSPage = () => {
             </div>
           </div>
 
+          <div className="flex items-center gap-4">
+            <Button variant="outline-danger" onClick={handleLogout} className="rounded-tr-4xl rounded-bl-4xl px-4 py-2">
+              LOG OUT
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-hidden">

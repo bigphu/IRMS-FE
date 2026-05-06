@@ -6,6 +6,8 @@ import type { Category, MenuItem as MenuItemType } from "@/types";
 import Navbar from "@/components/layout/Navbar";
 import type { NavItem } from "@/components/layout/Navbar";
 import { ScrollArea, Button } from "@/components";
+import { useAuth } from "@/hooks";
+import { useNavigate } from "react-router-dom";
 import { MenuItem } from "@/features/menu/components/MenuItem";
 import { default as ItemContainer } from "@/features/item/components/ItemContainer";
 import { CartModal } from "@/features/cart/components/CardModal";
@@ -38,6 +40,17 @@ const MenuPage = () => {
     return cartItems
       .filter((cartItem) => cartItem.menuItemId === menuItemId) // Flattened check
       .reduce((sum, cartItem) => sum + cartItem.quantity, 0);
+  };
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate("/login", { replace: true });
+    }
   };
 
   // Map application categories to the generic NavItem format
@@ -111,6 +124,13 @@ const MenuPage = () => {
             <div className="bg-surface text-primary border-primary rounded-full border-2 px-4 py-1 text-lg font-bold">
               {totalItems}
             </div>
+          </Button>
+          <Button
+            variant="outline-danger"
+            onClick={handleLogout}
+            className="rounded-tr-4xl rounded-bl-4xl px-6 py-4"
+          >
+            LOG OUT
           </Button>
         </div>
       </div>
