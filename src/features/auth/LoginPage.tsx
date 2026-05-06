@@ -1,28 +1,43 @@
 // src/features/auth/LoginPage.tsx
 import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { Button, InputBox } from "@/components";
+import { useAuth } from "@/hooks";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const submitLogin = async () => {
+    setErrorMessage(null);
+    setIsSubmitting(true);
 
     try {
-      await login({ email, password });
-      // Store token if needed (backend should set it via HttpOnly cookie)
-      navigate("/menu");
-    } catch (err) {
-      setError("Invalid email or password");
-      console.error("Login failed:", err);
+      const user = await login({ email, password });
+      if (user.role === "CHEF" || user.role === "MANAGER") {
+        navigate("/kds", { replace: true });
+        return;
+      }
+      navigate("/menu", { replace: true });
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setErrorMessage("Invalid email or password.");
+      } else {
+        setErrorMessage("Login failed. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    void submitLogin();
   };
 
   return (
@@ -57,15 +72,17 @@ const LoginPage = () => {
             className="px-4 py-2"
           />
 
-          {error && <div className="text-red-500 text-sm font-bold">{error}</div>}
+          {errorMessage ? (
+            <p className="text-danger text-sm font-semibold">{errorMessage}</p>
+          ) : null}
 
           <Button
             variant="full-primary"
             type="submit"
-            disabled={isLoading}
+            disabled={isSubmitting}
             className="mt-4 py-2 text-lg"
           >
-            {isLoading ? "LOGGING IN..." : "LOG IN"}
+            {isSubmitting ? "LOGGING IN..." : "LOG IN"}
           </Button>
         </form>
       </div>

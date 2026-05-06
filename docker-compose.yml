@@ -36,7 +36,11 @@ services:
     networks:
       - irms-network
     healthcheck:
+<<<<<<< HEAD
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/auth/me"]
+=======
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/me"]
+>>>>>>> origin/ngoc
       interval: 10s
       timeout: 5s
       retries: 5
