@@ -1,11 +1,12 @@
-import { useState, useMemo, useEffect } from "react";
-import { Flame, Pizza, UtensilsCrossed, Salad, List } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Flame, Pizza, UtensilsCrossed, Salad, List, AlertTriangle } from "lucide-react";
 
 import Navbar, { type NavItem } from "@/components/layout/Navbar";
-import { ScrollArea } from "@/components";
+import { ScrollArea, Button } from "@/components";
 import { KDSTicket } from "./components/KDSTicket";
 import { useKDSQuery } from "@/hooks/useKDSQuery";
 import { useMenuContext } from "@/contexts/MenuContext";
+import { kdsService } from "@/services";
 import type { KitchenStation, Order, OrderItem } from "@/types";
 
 const KITCHEN_STATIONS: NavItem[] = [
@@ -25,8 +26,12 @@ export const KDSPage = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const { orders, isLoading } = useKDSQuery();
+  const { orders, isLoading, refresh } = useKDSQuery();
   const { menuItems } = useMenuContext();
+
+  const [alerts, setAlerts] = useState<Order[]>([]);
+  const [alertThreshold, setAlertThreshold] = useState(10);
+  const [isAlertLoading, setIsAlertLoading] = useState(false);
 
   const filteredOrders = useMemo(() => {
     if (selectedStation === "ALL") return orders;
@@ -38,6 +43,26 @@ export const KDSPage = () => {
       });
     });
   }, [orders, selectedStation, menuItems]);
+
+  const fetchAlerts = useCallback(async () => {
+    setIsAlertLoading(true);
+    try {
+      const response = await kdsService.getAlerts(alertThreshold);
+      setAlerts(response);
+    } catch (error) {
+      console.error("Failed to load KDS alerts:", error);
+    } finally {
+      setIsAlertLoading(false);
+    }
+  }, [alertThreshold]);
+
+  useEffect(() => {
+    const loadAlerts = async () => {
+      await fetchAlerts();
+    };
+
+    void loadAlerts();
+  }, [fetchAlerts]);
 
   const onTimeCount = filteredOrders.filter((o: Order) => 
     (currentTime - new Date(o.createdAt).getTime()) / 60000 < 10
@@ -63,29 +88,58 @@ export const KDSPage = () => {
 
       <div className="flex flex-col flex-1 ml-24 p-8 h-full overflow-hidden">
         
-        <div className="flex items-end justify-between mb-8 shrink-0">
-          
-          <div className="flex gap-6">
-            <div className="flex flex-col gap-1">
-              <span className="text-dark font-bold text-sm">On Time:</span>
-              <div className="border-2 border-primary text-primary font-bold text-xl px-12 py-2 rounded-tr-xl rounded-bl-xl bg-surface flex justify-center shadow-sm tabular-nums">
-                {onTimeCount}
+        <div className="flex flex-col gap-6 mb-8 shrink-0">
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex gap-6">
+              <div className="flex flex-col gap-1">
+                <span className="text-dark font-bold text-sm">On Time:</span>
+                <div className="border-2 border-primary text-primary font-bold text-xl px-12 py-2 rounded-tr-xl rounded-bl-xl bg-surface flex justify-center shadow-sm tabular-nums">
+                  {onTimeCount}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-dark font-bold text-sm">Warning:</span>
+                <div className="border-2 border-[#f97316] text-[#f97316] font-bold text-xl px-12 py-2 rounded-tr-xl rounded-bl-xl bg-surface flex justify-center shadow-sm tabular-nums">
+                  {warningCount}
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-dark font-bold text-sm">Overdue:</span>
+                <div className="border-2 border-[#ef4444] text-[#ef4444] font-bold text-xl px-12 py-2 rounded-tr-xl rounded-bl-xl bg-surface flex justify-center shadow-sm tabular-nums">
+                  {overdueCount}
+                </div>
               </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-dark font-bold text-sm">Warning:</span>
-              <div className="border-2 border-[#f97316] text-[#f97316] font-bold text-xl px-12 py-2 rounded-tr-xl rounded-bl-xl bg-surface flex justify-center shadow-sm tabular-nums">
-                {warningCount}
+
+            <div className="flex items-center gap-3 p-4 rounded-3xl border border-gray-200 bg-white shadow-sm">
+              <div className="flex items-center gap-2 text-dark font-semibold">
+                <AlertTriangle size={18} />
+                Alerts
               </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-dark font-bold text-sm">Overdue:</span>
-              <div className="border-2 border-[#ef4444] text-[#ef4444] font-bold text-xl px-12 py-2 rounded-tr-xl rounded-bl-xl bg-surface flex justify-center shadow-sm tabular-nums">
-                {overdueCount}
-              </div>
+              <div className="font-bold text-xl tabular-nums">{alerts.length}</div>
+              <Button
+                variant="outline-secondary"
+                className="px-4 py-2"
+                onClick={fetchAlerts}
+                disabled={isAlertLoading}
+              >
+                {isAlertLoading ? "Refreshing..." : "Refresh"}
+              </Button>
             </div>
           </div>
-
+          <div className="flex items-center gap-2 text-sm text-dark/70">
+            <span>Alert threshold:</span>
+            {[5, 10, 15].map((threshold) => (
+              <Button
+                key={threshold}
+                variant={alertThreshold === threshold ? "full-secondary" : "outline-secondary"}
+                className="text-xs px-3 py-2"
+                onClick={() => setAlertThreshold(threshold)}
+              >
+                {threshold}m
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="flex-1 overflow-hidden">
@@ -97,7 +151,7 @@ export const KDSPage = () => {
                 </div>
               ) : filteredOrders.length > 0 ? (
                 filteredOrders.map((order: Order) => (
-                  <KDSTicket key={order.orderId} order={order} />
+                  <KDSTicket key={order.orderId} order={order} refreshOrders={refresh} />
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl border-4 border-dashed border-gray-200 rounded-3xl">

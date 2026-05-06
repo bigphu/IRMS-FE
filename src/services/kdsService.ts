@@ -16,6 +16,9 @@ const unwrap = <T>(response: AxiosResponse<ApiResponse<T> | T>) => {
   return data as T;
 };
 
+const buildPatchPath = (orderId: number, itemId: number, action: string) =>
+  `/kds/orders/${orderId}/items/${itemId}/${action}`;
+
 export const kdsService = {
   getQueue: async (): Promise<Order[]> => {
     const response = await api.get<ApiResponse<Order[]> | Order[]>("/kds/queue");
@@ -27,5 +30,21 @@ export const kdsService = {
       params: thresholdMinutes ? { thresholdMinutes } : {},
     });
     return unwrap(response);
+  },
+
+  startItem: async (orderId: number, itemId: number): Promise<void> => {
+    await api.patch(buildPatchPath(orderId, itemId, "start"));
+  },
+
+  readyItem: async (orderId: number, itemId: number): Promise<void> => {
+    await api.patch(buildPatchPath(orderId, itemId, "ready"));
+  },
+
+  completeItem: async (orderId: number, itemId: number): Promise<void> => {
+    await api.patch(buildPatchPath(orderId, itemId, "complete"));
+  },
+
+  cancelItem: async (orderId: number, itemId: number): Promise<void> => {
+    await api.patch(buildPatchPath(orderId, itemId, "cancel"));
   },
 };

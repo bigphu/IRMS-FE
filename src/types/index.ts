@@ -67,6 +67,7 @@ export interface OrderItem {
   name?: string;
   orderItemId: number;
   quantity: number;
+  status?: string;
   specialInstructions?: string;
   selectedOptionIds?: number[];
   selectedOptions?: CustomizationOption[];
