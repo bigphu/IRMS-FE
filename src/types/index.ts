@@ -1,52 +1,82 @@
-export type Role = 'MANAGER' | 'CHEF' | 'SERVER' | 'CASHIER';
-export type KitchenStation = 'OVEN' | 'GRILL' | 'FRY' | 'PREP' | 'BEVERAGE' | 'DESSERT';
-export type OrderStatus = 'PENDING' | 'PREPARING' | 'READY' | 'COMPLETED';
-export type ItemStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+export type Role = "MANAGER" | "CHEF" | "SERVER" | "CASHIER";
+export type KitchenStation =
+  | "GRILL"
+  | "FRYER"
+  | "SALAD"
+  | "DESSERT"
+  | "BEVERAGE"
+  | "PREP"
+  | "EXPEDITING"
+  | "COLD"
+  | "HOT"
+  | "PIZZA"
+  | "SUSHI"
+  | "BBQ"
+  | "PASTA"
+  | "VEGAN";
+export type OrderStatus =
+  | "UNPAID"
+  | "PENDING"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "OVERDUED"
+  | "CANCELED";
+export type Category = "BURGERS" | "PIZZAS" | "DRINKS" | "DESSERTS" | "SALADS";
 
-export interface User { 
-  id: string; 
-  email: string; 
-  name: string; 
-  role: Role; 
+export interface User {
+  id: string | number;
+  email: string;
+  name: string;
+  role: Role;
 }
 
-export interface AuthResponse { 
-  user: User; 
-  accessToken: string; 
-  refreshToken: string; 
+export interface AuthResponse {
+  user: User;
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface ItemBase { 
-  id: string | number; 
-  name: string; 
-  price: number; 
+export interface CategoryDetails {
+  category: Category | "ALL"; // Included "ALL" for the Navbar default state
+  label: string;
+  icon: React.ReactNode; 
 }
 
-export interface Product extends ItemBase { 
-  id: number; 
-  img: string; 
+export interface MenuItem {
+  menuItemId: number;
+  name: string;
+  category: Category;
+  price: number;
+  description?: string;
+  imageUrl?: string;
+  prepTime: number; // in minutes
+  isAvailable: boolean;
+
+  kitchenStations: KitchenStation[];
+  customizationOptions?: CustomizationOption[]; // Possible customizations for this menu item
 }
 
-export interface CartItem extends Product { 
-  cartId: number; 
-  quantity: number; 
-  options: ItemBase[]; 
-  total: number; 
+export interface CustomizationOption {
+  id: number;
+  name: string;
+  price: number;
 }
 
-export interface KDSOrderItem { 
-  id: string; 
-  name: string; 
-  quantity: number; 
-  options: ItemBase[]; 
-  stations: KitchenStation[]; 
-  status: ItemStatus; 
+export interface OrderItem {
+  menuItem: MenuItem; // Reference to the MenuItem
+  orderItemId: number; // Unique identifier for this item in the order
+  quantity: number;
+  specialInstructions?: string;
+  selectedOptions?: CustomizationOption[]; // Customizations selected for this item
+  totalPrice: number; // Calculated as (base price + options price) * quantity
 }
 
-export interface LiveOrder { 
-  orderId: string; 
-  tableNumber: string; 
-  createdAt: Date; 
-  status: OrderStatus; 
-  items: KDSOrderItem[]; 
+export interface Order {
+  orderId: number;
+  tableNumber: number;
+  items: OrderItem[];
+  totalPrice: number;
+  status: OrderStatus;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
 }

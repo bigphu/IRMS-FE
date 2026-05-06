@@ -1,8 +1,33 @@
-import type { LiveOrder } from '../types';
+// src/data/mockKDSData.ts
+import type { Order } from "../types";
 
-export const MOCK_LIVE_ORDERS: LiveOrder[] = [
+export const MOCK_KDS_ORDERS: Order[] = [
   {
-    orderId: "ORD-001", tableNumber: "T-12", createdAt: new Date(Date.now() - 1000 * 60 * 5), status: 'PREPARING',
-    items: [{ id: "i1", name: "Pepperoni", quantity: 1, options: [{ id: 't1', name: 'Extra Cheese', price: 0 }], stations: ['PREP', 'OVEN'], status: 'IN_PROGRESS' }]
-  }
+    orderId: 1001,
+    tableNumber: 12,
+    totalPrice: 200000,
+    status: "PENDING",
+    createdAt: new Date(Date.now() - 300000).toISOString(), // 5 mins ago
+    updatedAt: new Date().toISOString(),
+    items: [
+      {
+        orderItemId: 991,
+        quantity: 1,
+        totalPrice: 210000,
+        selectedOptions: [{ id: 201, name: "Extra Cheese", price: 30000 }],
+        // THE FIX: Nest the food details inside the menuItem property!
+        menuItem: {
+          menuItemId: 2,
+          name: "Pepperoni Pizza",
+          category: "PIZZAS",
+          price: 180000,
+          prepTime: 15,
+          isAvailable: true,
+          kitchenStations: ["PIZZA", "PREP"], 
+          imageUrl: "", // Add dummy string if required by your types
+          description: "" // Add dummy string if required by your types
+        },
+      },
+    ],
+  },
 ];

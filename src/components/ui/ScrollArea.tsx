@@ -1,4 +1,32 @@
+// src/components/ScrollArea.tsx
 import React from 'react';
-export default function ScrollArea({ children, className = '', direction = 'vertical' }: { children: React.ReactNode, className?: string, direction?: 'vertical'|'horizontal' }) {
-  return <div className={`no-scrollbar ${direction === 'horizontal' ? 'flex overflow-x-auto gap-4' : 'overflow-y-auto'} ${className}`}>{children}</div>;
+
+interface ScrollAreaProps {
+  children: React.ReactNode;
+  className?: string;
+  direction?: 'vertical' | 'horizontal';
+  scrollbar?: 'hidden' | 'custom';
 }
+
+const ScrollArea = ({ 
+  children, 
+  className = '', 
+  direction = 'vertical',
+  scrollbar = 'custom'
+}: ScrollAreaProps) => {
+  
+  // FIX: Swapped overflow-y-hidden to overflow-y-auto
+  const layoutClass = direction === 'horizontal' 
+    ? 'flex overflow-x-auto gap-4' 
+    : 'overflow-y-auto overflow-x-visible'; 
+
+  const scrollbarClass = scrollbar === 'hidden' ? 'no-scrollbar' : 'custom-scrollbar';
+
+  return (
+    <div className={`${scrollbarClass} ${layoutClass} ${className}`}>
+      {children}
+    </div>
+  );
+};
+
+export default ScrollArea;
