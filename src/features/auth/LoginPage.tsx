@@ -1,10 +1,28 @@
 // src/features/auth/LoginPage.tsx
-import { Button, InputBox } from "@/components"; // Importing from your global UI library
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Button, InputBox } from "@/components";
 
 const LoginPage = () => {
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic
+    setError("");
+
+    try {
+      await login({ email, password });
+      // Store token if needed (backend should set it via HttpOnly cookie)
+      navigate("/menu");
+    } catch (err) {
+      setError("Invalid email or password");
+      console.error("Login failed:", err);
+    }
   };
 
   return (
@@ -17,12 +35,13 @@ const LoginPage = () => {
         </h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Replacing raw inputs with your InputBox component */}
           <InputBox
             id="email"
             label="Email"
             type="email"
             placeholder="Enter your email"
+            content={email}
+            onChange={setEmail}
             required
             className="px-4 py-2"
           />
@@ -32,17 +51,21 @@ const LoginPage = () => {
             label="Password"
             type="password"
             placeholder="Enter your password"
+            content={password}
+            onChange={setPassword}
             required
             className="px-4 py-2"
           />
 
-          {/* Replacing raw button with your Button component */}
+          {error && <div className="text-red-500 text-sm font-bold">{error}</div>}
+
           <Button
             variant="full-primary"
             type="submit"
+            disabled={isLoading}
             className="mt-4 py-2 text-lg"
           >
-            LOG IN
+            {isLoading ? "LOGGING IN..." : "LOG IN"}
           </Button>
         </form>
       </div>

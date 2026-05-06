@@ -2,7 +2,7 @@ import axios from "axios";
 import type { AxiosRequestHeaders, InternalAxiosRequestConfig } from "axios";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
   withCredentials: true,
 });
 
@@ -21,7 +21,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      window.location.href = "/login";
+      // Clear any stale token and redirect to login
+      window.localStorage.removeItem("irms_access_token");
+      // Only redirect if not already on login page
+      if (!window.location.pathname.includes("/login")) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   },
