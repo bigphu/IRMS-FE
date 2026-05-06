@@ -11,8 +11,8 @@ import { default as ItemContainer } from "@/features/item/components/ItemContain
 import { CartModal } from "@/features/cart/components/CardModal";
 
 // Context & Data
-import { useCartContext } from "@/features/cart/contexts/CartContext";
-import { MenuItems, Categories } from "@/data"; 
+import { useCartContext } from "@/contexts/CartContext";
+import { useMenuContext } from "@/contexts/MenuContext";
 import { formatCurrency } from "@/utils/formatters";
 
 const MenuPage = () => {
@@ -24,22 +24,24 @@ const MenuPage = () => {
   // --- GLOBAL CONTEXT ---
   const { items: cartItems, totalItems, totalPrice } = useCartContext();
 
+  const { menuItems, categories, isLoading } = useMenuContext();
+
   // --- DERIVED DATA ---
   const filteredItems = useMemo(() => {
-    return MenuItems.filter(
+    return menuItems.filter(
       (item) =>
         selectedCategory === "ALL" || item.category === selectedCategory,
     );
-  }, [selectedCategory]);
+  }, [menuItems, selectedCategory]);
 
   const getCartCountForItem = (menuItemId: number) => {
     return cartItems
-      .filter((cartItem) => cartItem.menuItem.menuItemId === menuItemId)
+      .filter((cartItem) => cartItem.menuItemId === menuItemId) // Flattened check
       .reduce((sum, cartItem) => sum + cartItem.quantity, 0);
   };
 
   // Map application categories to the generic NavItem format
-  const menuNavItems: NavItem[] = Categories.map((cat) => ({
+  const menuNavItems: NavItem[] = categories.map((cat) => ({
     id: cat.category,
     label: cat.label,
     icon: cat.icon,
@@ -75,11 +77,15 @@ const MenuPage = () => {
                 </div>
               ))}
 
-              {filteredItems.length === 0 && (
-                <div className="w-full text-center text-xl font-bold text-gray-400">
-                  No items found in this category.
-                </div>
-              )}
+              {isLoading ? (
+              <div className="w-full text-center text-xl font-bold text-gray-400">
+                Loading menu...
+              </div>
+            ) : filteredItems.length === 0 ? (
+              <div className="w-full text-center text-xl font-bold text-gray-400">
+                No items found in this category.
+              </div>
+            ) : null}
             </div>
           </ScrollArea>
         </div>

@@ -1,12 +1,12 @@
-// src/features/kds/KDSPage.tsx
 import { useState, useMemo, useEffect } from "react";
 import { Flame, Pizza, UtensilsCrossed, Salad, List } from "lucide-react";
 
-import Navbar, { type NavItem } from "@/components/layout/Navbar"; // <-- Added 'type' keyword
-import { ScrollArea } from "@/components"; 
-import { KDSTicket } from "./components/KDSTicket"; 
-import { MOCK_KDS_ORDERS } from "@/data/mockKDSData"; // <-- Direct path to bypass the barrel file issue
-import type { KitchenStation, Order, OrderItem } from "@/types"; // <-- Imported missing Order and OrderItem types
+import Navbar, { type NavItem } from "@/components/layout/Navbar";
+import { ScrollArea } from "@/components";
+import { KDSTicket } from "./components/KDSTicket";
+import { useKDSQuery } from "@/hooks/useKDSQuery";
+import { useMenuContext } from "@/contexts/MenuContext";
+import type { KitchenStation, Order, OrderItem } from "@/types";
 
 const KITCHEN_STATIONS: NavItem[] = [
   { id: "ALL", label: "All", icon: <List size={28} /> },
@@ -25,16 +25,19 @@ export const KDSPage = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const { orders, isLoading } = useKDSQuery();
+  const { menuItems } = useMenuContext();
+
   const filteredOrders = useMemo(() => {
-    if (selectedStation === "ALL") return MOCK_KDS_ORDERS;
-    
-    return MOCK_KDS_ORDERS.filter((order: Order) => {
-      return order.items.some((item: OrderItem) => 
-        // <-- Removed the dirty 'any' cast! We just use the clean menuItem path.
-        item.menuItem?.kitchenStations?.includes(selectedStation as KitchenStation)
-      );
+    if (selectedStation === "ALL") return orders;
+
+    return orders.filter((order: Order) => {
+      return order.items.some((item: OrderItem) => {
+        const menuItem = menuItems.find((m) => m.menuItemId === item.menuItemId);
+        return menuItem?.kitchenStations?.includes(selectedStation as KitchenStation);
+      });
     });
-  }, [selectedStation]);
+  }, [orders, selectedStation, menuItems]);
 
   const onTimeCount = filteredOrders.filter((o: Order) => 
     (currentTime - new Date(o.createdAt).getTime()) / 60000 < 10
@@ -88,11 +91,15 @@ export const KDSPage = () => {
         <div className="flex-1 overflow-hidden">
           <ScrollArea direction="horizontal" className="h-full w-full pb-4">
             <div className="flex gap-8 h-full pl-2 pr-4 pt-2">
-              {filteredOrders.map((order: Order) => (
-                <KDSTicket key={order.orderId} order={order} />
-              ))}
-              
-              {filteredOrders.length === 0 && (
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl">
+                  Loading kitchen queue...
+                </div>
+              ) : filteredOrders.length > 0 ? (
+                filteredOrders.map((order: Order) => (
+                  <KDSTicket key={order.orderId} order={order} />
+                ))
+              ) : (
                 <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl border-4 border-dashed border-gray-200 rounded-3xl">
                   No orders for this station.
                 </div>

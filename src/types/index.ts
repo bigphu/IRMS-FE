@@ -37,9 +37,15 @@ export interface AuthResponse {
 }
 
 export interface CategoryDetails {
-  category: Category | "ALL"; // Included "ALL" for the Navbar default state
+  category: Category | "ALL";
   label: string;
-  icon: React.ReactNode; 
+  icon: React.ReactNode;
+}
+
+export interface CustomizationOption {
+  id: number;
+  name: string;
+  price: number;
 }
 
 export interface MenuItem {
@@ -49,26 +55,22 @@ export interface MenuItem {
   price: number;
   description?: string;
   imageUrl?: string;
-  prepTime: number; // in minutes
+  prepTime: number;
   isAvailable: boolean;
-
   kitchenStations: KitchenStation[];
-  customizationOptions?: CustomizationOption[]; // Possible customizations for this menu item
-}
-
-export interface CustomizationOption {
-  id: number;
-  name: string;
-  price: number;
+  customizationOptions?: CustomizationOption[];
 }
 
 export interface OrderItem {
-  menuItem: MenuItem; // Reference to the MenuItem
-  orderItemId: number; // Unique identifier for this item in the order
+  menuItemId: number;
+  menuItem?: MenuItem;
+  name?: string;
+  orderItemId: number;
   quantity: number;
   specialInstructions?: string;
-  selectedOptions?: CustomizationOption[]; // Customizations selected for this item
-  totalPrice: number; // Calculated as (base price + options price) * quantity
+  selectedOptionIds?: number[];
+  selectedOptions?: CustomizationOption[];
+  totalPrice: number;
 }
 
 export interface Order {
@@ -77,6 +79,36 @@ export interface Order {
   items: OrderItem[];
   totalPrice: number;
   status: OrderStatus;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  img: string;
+}
+
+export interface ItemBase {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface LiveOrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  options: any[];
+  stations: string[];
+  status: string;
+}
+
+export interface LiveOrder {
+  orderId: string;
+  tableNumber: string;
+  createdAt: Date;
+  status: string;
+  items: LiveOrderItem[];
 }

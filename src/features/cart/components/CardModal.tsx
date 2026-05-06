@@ -1,7 +1,8 @@
 // src/features/cart/CartModal.tsx
+import { MenuItems } from "@/data";
 import { useState } from "react";
 import { Archive } from "lucide-react";
-import { useCartContext } from "../contexts/CartContext";
+import { useCartContext } from "../../../contexts/CartContext";
 import { ScrollArea, Button } from "@/components";
 import { default as ItemContainer } from "@/features/item/components/ItemContainer";
 import { CartItem } from "./CartItem"; 
@@ -75,11 +76,10 @@ export const CartModal = ({ onClose }: CartModalProps) => {
       </div>
 
       {/* EDIT MODAL WORKSPACE */}
-      {/* Needs a higher z-index (z-50) so it stacks on top of the CartModal (z-40) */}
       {editingItem && (
         <div className="fixed inset-0 z-50">
           <ItemContainer 
-            item={editingItem.menuItem} 
+            item={MenuItems.find(m => m.menuItemId === editingItem.menuItemId)!} 
             initialOrder={editingItem} 
             onClose={() => setEditingItem(null)} 
           />

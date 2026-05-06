@@ -12,6 +12,7 @@ export const MOCK_KDS_ORDERS: Order[] = [
     items: [
       {
         orderItemId: 991,
+        menuItemId: 2,
         quantity: 1,
         totalPrice: 210000,
         selectedOptions: [{ id: 201, name: "Extra Cheese", price: 30000 }],
@@ -23,9 +24,9 @@ export const MOCK_KDS_ORDERS: Order[] = [
           price: 180000,
           prepTime: 15,
           isAvailable: true,
-          kitchenStations: ["PIZZA", "PREP"], 
-          imageUrl: "", // Add dummy string if required by your types
-          description: "" // Add dummy string if required by your types
+          kitchenStations: ["PIZZA", "PREP"],
+          imageUrl: "",
+          description: "",
         },
       },
     ],

@@ -6,7 +6,7 @@ interface ItemContextType {
   orderItemId?: number;
   quantity: number;
   setQuantity: (newQuantity: number) => void;
-  opts: CustomizationOption[];
+  opts: CustomizationOption[]; // Keep hydrated for UI rendering
   handleToggleOption: (option: CustomizationOption) => void;
   totalPrice: number;
 }

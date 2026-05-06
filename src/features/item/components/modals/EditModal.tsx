@@ -1,4 +1,4 @@
-import { useCartContext } from "@/features/cart/contexts/CartContext";
+import { useCartContext } from "@/contexts/CartContext";
 import { useItemContext } from "../../context/ItemContext";
 import BaseModal from "./BaseModal"; 
 

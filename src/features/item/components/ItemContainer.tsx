@@ -1,10 +1,9 @@
+// src/features/item/components/ItemContainer.tsx
 import { default as BaseModal } from "./modals/BaseModal";
-import EditModal from "./modals/EditModal";
 import { useState, useMemo } from "react";
 import type { MenuItem, CustomizationOption, OrderItem } from "@/types";
 import { ItemContext } from "../context/ItemContext";
-
-import { useCartContext } from "@/features/cart/contexts/CartContext"; 
+import { useCartContext } from "@/contexts/CartContext"; 
 
 interface ItemContainerProps {
   item: MenuItem;
@@ -13,22 +12,23 @@ interface ItemContainerProps {
 }
 
 const ItemContainer = ({ item, initialOrder, onClose }: ItemContainerProps) => {
-  // 2. Grab the addToCart function
   const { addToCart } = useCartContext(); 
 
   const [quantity, setQuantity] = useState(initialOrder ? initialOrder.quantity : 1);
+  
+  // Hydrate options based on IDs
   const [opts, setOpts] = useState<CustomizationOption[]>(
-    initialOrder?.selectedOptions ?? []
+    initialOrder && item.customizationOptions
+      ? item.customizationOptions.filter(o => initialOrder.selectedOptionIds?.includes(o.id))
+      : []
   );
 
   const handleToggleOption = (option: CustomizationOption) => {
     setOpts((prev) => {
       const isCurrentlySelected = prev.some((o) => o.id === option.id);
-      if (isCurrentlySelected) {
-        return prev.filter((o) => o.id !== option.id);
-      } else {
-        return [...prev, option];
-      }
+      return isCurrentlySelected 
+        ? prev.filter((o) => o.id !== option.id) 
+        : [...prev, option];
     });
   };
 
@@ -39,37 +39,36 @@ const ItemContainer = ({ item, initialOrder, onClose }: ItemContainerProps) => {
   }, [item.price, opts, quantity]);
 
   const contextValue = {
-    item,
-    quantity,
+    item, 
+    quantity, 
     orderItemId: initialOrder?.orderItemId,
-    setQuantity,
-    opts,
-    handleToggleOption,
+    setQuantity, 
+    opts, 
+    handleToggleOption, 
     totalPrice
+  };
+
+  // Centralized save handler for both ADD and EDIT
+  const handleSave = () => {
+    addToCart({
+      // Keep the existing ID if editing, otherwise generate a new one
+      orderItemId: initialOrder?.orderItemId || Date.now(), 
+      menuItemId: item.menuItemId,
+      quantity: quantity,
+      selectedOptionIds: opts.map(o => o.id),
+      totalPrice: totalPrice,
+    } as OrderItem);
+    
+    onClose(); 
   };
 
   return (
     <ItemContext.Provider value={contextValue}>
-      {initialOrder ? (
-        <EditModal onClose={onClose} />
-      ) : (
-        <BaseModal
-          onAction={() => {
-            // 3. Actually dispatch the item to the global cart!
-            addToCart({
-              menuItem: item, // Ensure this matches your MenuItem type ID field
-              orderItemId: Date.now(), // Generate a unique ID for the cart row
-              quantity: quantity,
-              selectedOptions: opts,
-              totalPrice: totalPrice,
-            } as OrderItem);
-            
-            onClose(); // Close the modal after adding
-          }}
-          onClose={onClose}
-          actionLabel="Add to Cart"
-        />
-      )}
+      <BaseModal
+        onAction={handleSave}
+        onClose={onClose}
+        actionLabel={initialOrder ? "Save Changes" : "Add to Cart"}
+      />
     </ItemContext.Provider>
   );
 };

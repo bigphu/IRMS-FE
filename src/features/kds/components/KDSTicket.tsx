@@ -1,4 +1,4 @@
-// src/features/kds/components/KDSTicket.tsx
+import { MenuItems } from "@/data"; 
 import { Clock } from "lucide-react";
 import { Button, ScrollArea } from "@/components";
 import { useTicketTimer } from "../hooks/useTicketTimer";
@@ -9,7 +9,12 @@ interface KDSTicketProps {
 }
 
 const TicketRow = ({ item, textColor }: { item: OrderItem; textColor: string }) => {
-  const itemName = item.menuItem?.name || "Unknown Item";
+  const menuItem = MenuItems.find(m => m.menuItemId === item.menuItemId);
+  const itemName = menuItem?.name || "Unknown Item";
+  
+  const selectedOptions = menuItem?.customizationOptions?.filter(o => 
+    item.selectedOptionIds?.includes(o.id)
+  ) || [];
 
   return (
     <div className="flex items-start gap-4">
@@ -18,9 +23,9 @@ const TicketRow = ({ item, textColor }: { item: OrderItem; textColor: string }) 
       </span>
       <div className="flex flex-col">
         <span className="text-dark font-bold text-lg leading-tight">{itemName}</span>
-        {item.selectedOptions && item.selectedOptions.length > 0 && (
+        {selectedOptions.length > 0 && (
           <span className="text-dark/70 text-sm mt-1">
-            {item.selectedOptions.map(opt => opt.name).join(", ")}
+            {selectedOptions.map(opt => opt.name).join(", ")}
           </span>
         )}
       </div>
@@ -45,7 +50,10 @@ export const KDSTicket = ({ order }: KDSTicketProps) => {
   const theme = getTicketTheme(elapsedMinutes);
 
   const uniqueStations = Array.from(
-    new Set(order.items.flatMap((item) => item.menuItem?.kitchenStations || []))
+    new Set(order.items.flatMap((item) => {
+      const menuItem = MenuItems.find(m => m.menuItemId === item.menuItemId);
+      return menuItem?.kitchenStations || [];
+    }))
   ).join(", ");
 
   return (
