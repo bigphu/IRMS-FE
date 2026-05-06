@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+    networks:
+      - irms-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: openjdk:17-jdk-slim
+    working_dir: /app
+    volumes:
+      - ../IRMS-BE:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    command: mvn spring-boot:run
+    networks:
+      - irms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/me"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  irms-network:
+    driver: bridge
