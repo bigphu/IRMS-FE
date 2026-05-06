@@ -2,27 +2,44 @@ import { MenuItems } from "@/data";
 import { Clock } from "lucide-react";
 import { Button, ScrollArea } from "@/components";
 import { useTicketTimer } from "../hooks/useTicketTimer";
+import { kdsService } from "@/services";
+import { useState } from "react";
 import type { Order, OrderItem } from "@/types"; 
 
 interface KDSTicketProps {
   order: Order;
+  onActionComplete?: () => void;
 }
 
 const TicketRow = ({ item, textColor }: { item: OrderItem; textColor: string }) => {
   const menuItem = MenuItems.find(m => m.menuItemId === item.menuItemId);
-  const itemName = menuItem?.name || "Unknown Item";
+  const itemName = item.name || menuItem?.name || "Unknown Item";
   
-  const selectedOptions = menuItem?.customizationOptions?.filter(o => 
+  const selectedOptions = item.selectedOptions || (menuItem?.customizationOptions?.filter(o => 
     item.selectedOptionIds?.includes(o.id)
-  ) || [];
+  ) || []);
+
+  const statusBadge = item.status && item.status !== "PENDING" ? (
+    <span className={`text-xs font-bold px-2 py-1 rounded ml-auto ${
+      item.status === "READY" ? "bg-primary text-light" :
+      item.status === "COOKING" ? "bg-highlight text-dark" :
+      item.status === "COMPLETED" ? "bg-success text-light" :
+      "bg-gray-300 text-dark"
+    }`}>
+      {item.status}
+    </span>
+  ) : null;
 
   return (
     <div className="flex items-start gap-4">
       <span className={`${textColor} font-bold text-xl min-w-10`}>
         {item.quantity}x
       </span>
-      <div className="flex flex-col">
-        <span className="text-dark font-bold text-lg leading-tight">{itemName}</span>
+      <div className="flex flex-col flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-dark font-bold text-lg leading-tight">{itemName}</span>
+          {statusBadge}
+        </div>
         {selectedOptions.length > 0 && (
           <span className="text-dark/70 text-sm mt-1">
             {selectedOptions.map(opt => opt.name).join(", ")}
@@ -36,25 +53,69 @@ const TicketRow = ({ item, textColor }: { item: OrderItem; textColor: string }) 
 // Map the timer to your Button's supported colors and your Tailwind theme colors
 const getTicketTheme = (elapsedMinutes: number) => {
   if (elapsedMinutes >= 20) {
-    return { color: "danger", bg: "bg-danger", text: "text-danger", actionLabel: "READY" };
+    return { color: "danger", bg: "bg-danger", text: "text-danger" };
   }
   if (elapsedMinutes >= 10) {
-    // Maps to your "secondary" button variant, which uses the "highlight" tailwind color
-    return { color: "secondary", bg: "bg-highlight", text: "text-highlight", actionLabel: "READY" }; 
+    return { color: "secondary", bg: "bg-highlight", text: "text-highlight" }; 
   }
-  return { color: "primary", bg: "bg-primary", text: "text-primary", actionLabel: "READY" };
+  return { color: "primary", bg: "bg-primary", text: "text-primary" };
 };
 
-export const KDSTicket = ({ order }: KDSTicketProps) => {
+export const KDSTicket = ({ order, onActionComplete }: KDSTicketProps) => {
   const { elapsedTime, elapsedMinutes } = useTicketTimer(order.createdAt);
   const theme = getTicketTheme(elapsedMinutes);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Safely handle missing items array
+  const items = order.items || [];
+
+  // Find the first incomplete item
+  const incompleteItem = items.find(i => i.status !== "COMPLETED");
+  
+  // Determine button state based on item progress
+  const isItemReady = incompleteItem?.status === "READY";
+  const isItemCooking = incompleteItem?.status === "COOKING";
 
   const uniqueStations = Array.from(
-    new Set(order.items.flatMap((item) => {
+    new Set(items.flatMap((item) => {
       const menuItem = MenuItems.find(m => m.menuItemId === item.menuItemId);
       return menuItem?.kitchenStations || [];
     }))
   ).join(", ");
+
+  const handleMarkReady = async () => {
+    if (!incompleteItem) return;
+    
+    setIsUpdating(true);
+    try {
+      if (isItemReady) {
+        // If already READY, complete the item
+        await kdsService.completeItem(order.orderId, incompleteItem.orderItemId);
+      } else {
+        // Mark as READY
+        await kdsService.markItemReady(order.orderId, incompleteItem.orderItemId);
+      }
+      onActionComplete?.();
+    } catch (err) {
+      console.error("Failed to update item:", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleHold = async () => {
+    if (!incompleteItem) return;
+    
+    setIsUpdating(true);
+    try {
+      await kdsService.startItem(order.orderId, incompleteItem.orderItemId);
+      onActionComplete?.();
+    } catch (err) {
+      console.error("Failed to hold item:", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <div className="flex flex-col w-80 shrink-0 drop-shadow-md h-128">
@@ -75,7 +136,7 @@ export const KDSTicket = ({ order }: KDSTicketProps) => {
         <div className="flex-1 overflow-hidden -mr-2">
           <ScrollArea direction="vertical" className="h-full pr-4 pb-2">
             <div className="flex flex-col gap-5">
-              {order.items.map((item) => (
+              {items.map((item) => (
                 <TicketRow key={item.orderItemId} item={item} textColor={theme.text} />
               ))}
             </div>
@@ -85,17 +146,21 @@ export const KDSTicket = ({ order }: KDSTicketProps) => {
         {/* ACTIONS: Dramatically simplified using your Button variants! */}
         <div className="flex gap-3 mt-4 pt-4 border-t-2 border-gray-100">
           <Button 
-            variant={`full-${theme.color}`} 
+            variant={`full-${theme.color}`}
+            onClick={handleMarkReady}
+            disabled={isUpdating || !incompleteItem}
             className="flex-1 py-3 text-lg"
           >
-            {theme.actionLabel}
+            {isUpdating ? "..." : (isItemReady ? "COMPLETE" : "READY")}
           </Button>
           
           <Button 
-            variant={`outline-${theme.color}`} 
+            variant={`outline-${theme.color}`}
+            onClick={handleHold}
+            disabled={isUpdating || !incompleteItem || isItemCooking}
             className="flex-1 py-3 text-lg bg-surface"
           >
-            HOLD
+            {isUpdating ? "..." : "HOLD"}
           </Button>
         </div>
       </div>
