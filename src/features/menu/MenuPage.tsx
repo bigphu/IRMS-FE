@@ -158,7 +158,7 @@ const MenuPage = () => {
         </div>
 
         {/* --- FOOTER: TOTAL & VIEW CART --- */}
-        <div className="flex h-28 w-full shrink-0 items-center justify-end gap-24 border-t-2 border-gray-200/50 pt-6 pr-12 pb-6 pl-10 bg-surface z-10">
+        <div className="flex h-28 w-full shrink-0 items-center justify-end gap-16s border-t-2 border-gray-200/50 pt-6 pr-12 pb-6 pl-10 bg-surface z-10">
           
           <div className="flex items-end gap-2">
             <span className="text-dark text-xl font-black tracking-wider">
@@ -188,6 +188,13 @@ const MenuPage = () => {
               VIEW ORDERS
             </Button>
           )}
+          <Button
+            variant="full-secondary"
+            onClick={() => navigate("/orders")}
+            className="rounded-tr-4xl rounded-bl-4xl px-6 py-4 shadow-xl"
+          >
+            ALL ORDERS
+          </Button>
           <Button
             variant="outline-danger"
             onClick={handleLogout}

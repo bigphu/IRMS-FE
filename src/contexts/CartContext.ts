@@ -5,7 +5,7 @@ import type { OrderItem } from "@/types";
 interface CartContextType {
   items: OrderItem[]; // Now automatically uses the normalized ID structure
   totalItems: number;
-  totalPrice: number;
+  totalPrice: number; // This can be calculated from the items in the cart
   
   addToCart: (item: OrderItem) => void;
   removeFromCart: (orderItemId: number) => void;

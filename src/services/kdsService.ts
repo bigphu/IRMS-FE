@@ -20,7 +20,7 @@ const buildPatchPath = (orderId: number, itemId: number, action: string) =>
   `/kds/orders/${orderId}/items/${itemId}/${action}`;
 
 export const kdsService = {
-  getQueue: async (sortBy = "ESTIMATED_PREP_TIME", direction = "ASC"): Promise<Order[]> => {
+  getQueue: async (sortBy = "ORDER_TIME", direction = "DESC"): Promise<Order[]> => {
     const response = await api.get<ApiResponse<Order[]> | Order[]>(
       `/kds/queue?sortBy=${sortBy}&direction=${direction}`
     );
@@ -44,6 +44,13 @@ export const kdsService = {
   markItemReady: async (orderId: number, itemId: number): Promise<Order> => {
     const response = await api.patch<ApiResponse<Order> | Order>(
       `/kds/orders/${orderId}/items/${itemId}/ready`
+    );
+    return unwrap(response);
+  },
+
+  markOrderCooking: async (orderId: number): Promise<Order> => {
+    const response = await api.patch<ApiResponse<Order> | Order>(
+      `/kds/orders/${orderId}/cooking`
     );
     return unwrap(response);
   },

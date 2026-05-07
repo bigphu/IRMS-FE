@@ -22,6 +22,7 @@ const App = () => {
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/menu" element={<MenuPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedRoles={["SERVER", "MANAGER"]} />}>

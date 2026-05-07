@@ -31,14 +31,24 @@ interface UpdateOrderRequest {
 const unwrap = <T>(response: AxiosResponse<ApiResponse<T> | T>) => {
   const data = response.data;
   if (data && typeof data === "object" && "data" in data) {
-    return (data as ApiResponse<T>).data;
+    return data.data;
   }
   return data as T;
 };
 
 export const orderService = {
+  getAllOrders: async (): Promise<Order[]> => {
+    const response = await api.get<ApiResponse<Order[]> | Order[]>("/orders/all");
+    return unwrap(response);
+  },
+
   getOrder: async (id: number): Promise<Order> => {
     const response = await api.get<ApiResponse<Order> | Order>(`/orders/get/${id}`);
+    return unwrap(response);
+  },
+
+  completeOrder: async (orderId: number): Promise<Order> => {
+    const response = await api.patch<ApiResponse<Order> | Order>(`/orders/${orderId}/complete`);
     return unwrap(response);
   },
 

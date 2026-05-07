@@ -25,17 +25,17 @@ const DISH_IMAGES: Record<string, string> = {
   "Crabstick Cocktail Pizza":
     "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=400&h=300&fit=crop",
   "Pepperoni Pizza":
-    "https://images.unsplash.com/photo-1628840042765-356cda07f337?w=400&h=300&fit=crop",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtkPvQZx7vvm6viujzQrJw-o9Fdc5zJbXboQ&s?w=400&h=300&fit=crop",
   "Bacon Cheese Burger":
     "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop",
   "Crispy Fries":
-    "https://images.unsplash.com/photo-1573080496104-febf75cf11ff?w=400&h=300&fit=crop",
+    "https://www.allrecipes.com/thmb/8_B6OD1w6h1V0zPi8KAGzD41Kzs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/50223-homemade-crispy-seasoned-french-fries-VAT-Beauty-4x3-789ecb2eaed34d6e879b9a93dd56a50a.jpg?w=400&h=300&fit=crop",
   "Caesar Salad":
     "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
   "Chocolate Lava Cake":
     "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop",
   "Fresh Lemonade":
-    "https://images.unsplash.com/photo-1578520494395-f4aa41d1d328?w=400&h=300&fit=crop",
+    "https://dinnerthendessert.com/wp-content/uploads/2025/06/Lemonade-Recipe-10.jpg?w=400&h=300&fit=crop",
 };
 
 /**

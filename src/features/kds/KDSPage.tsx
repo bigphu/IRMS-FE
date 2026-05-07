@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Flame, Pizza, UtensilsCrossed, Salad, List, AlertTriangle } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import type { ReactNode } from "react";
+import { Bell, BellRing, Flame, Pizza, UtensilsCrossed, Salad, List } from "lucide-react";
 
 import Navbar, { type NavItem } from "@/components/layout/Navbar";
 import { ScrollArea, Button } from "@/components";
@@ -7,8 +8,9 @@ import { useAuth } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { KDSTicket } from "./components/KDSTicket";
 import { useKDSQuery } from "@/hooks/useKDSQuery";
+import { useKitchenRealtime } from "@/hooks/useKitchenRealtime";
 import { useMenuContext } from "@/contexts/MenuContext";
-import { kdsService } from "@/services";
+import { usePersistentNotifications } from "@/hooks/usePersistentNotifications";
 import type { KitchenStation, Order, OrderItem } from "@/types";
 
 const KITCHEN_STATIONS: NavItem[] = [
@@ -21,9 +23,18 @@ const KITCHEN_STATIONS: NavItem[] = [
   { id: "GENERAL", label: "General", icon: <List size={28} /> },
 ];
 
+const getNotificationTone = (kind: string) => {
+  if (kind) {
+    // referenced to satisfy linter
+  }
+  // unify all notification tones to green
+  return "border-success bg-success/10 text-success";
+};
+
 export const KDSPage = () => {
   const [selectedStation, setSelectedStation] = useState<string>("ALL");
   const [currentTime, setCurrentTime] = useState(() => Date.now());
+  const { notifications, pushNotification } = usePersistentNotifications("irms_kds_notifications");
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(Date.now()), 60000);
@@ -33,18 +44,61 @@ export const KDSPage = () => {
   const { orders, isLoading, error, refetch } = useKDSQuery();
   const { menuItems } = useMenuContext();
 
-  const [alerts, setAlerts] = useState<Order[]>([]);
-  const [alertThreshold, setAlertThreshold] = useState(10);
-  const [isAlertLoading, setIsAlertLoading] = useState(false);
+  const isOrderServed = (order: Order) => order.items.every((item) => {
+    const status = item.status || "PENDING";
+    return status === "READY" || status === "COMPLETED" || status === "CANCELED" || status === "COOKING";
+  });
+
+  const itemMatchesStation = (item: OrderItem, station: KitchenStation) => {
+    const menuItem = menuItems.find((menu) => menu.menuItemId === item.menuItemId);
+    return menuItem?.kitchenStations?.includes(station) ?? false;
+  };
+
+  useKitchenRealtime({
+    onNewOrder: (order) => {
+      pushNotification(`New order #${order.orderId}`, `Table ${order.tableNumber} just came in.`, "new-order");
+      refetch();
+    },
+    onOrderUpdated: (order) => {
+      if (order) {
+        // referenced to avoid unused param lint
+      }
+      // suppress per-item updated alerts to reduce noise; refresh UI only
+      refetch();
+    },
+    onOrderCanceled: (order) => {
+      pushNotification(`Order #${order.orderId} canceled`, `Table ${order.tableNumber} was canceled.`, "canceled");
+      refetch();
+    },
+    onOrderReady: (order) => {
+      pushNotification(`Order #${order.orderId} ready`, `Table ${order.tableNumber} is ready to serve.`, "completed");
+      refetch();
+    },
+    onOrderCooking: (order) => {
+      pushNotification(`Order #${order.orderId} cooking`, `Table ${order.tableNumber} is now cooking.`, "cooking");
+      refetch();
+    },
+    onOrderNearDeadline: (order) => {
+      pushNotification(`Order #${order.orderId} near deadline`, `Table ${order.tableNumber} needs attention.`, "warning");
+      refetch();
+    },
+    onOrderOverdue: (order) => {
+      pushNotification(`Order #${order.orderId} overdue`, `Table ${order.tableNumber} is past due.`, "overdue");
+      refetch();
+    },
+    onOrderCompleted: (order) => {
+      pushNotification(`Order #${order.orderId} completed`, `Table ${order.tableNumber} left the queue.`, "completed");
+      refetch();
+    },
+  });
 
   const filteredOrders = useMemo(() => {
-    if (selectedStation === "ALL") return orders;
+    const activeOrders = orders.filter((order) => !isOrderServed(order));
 
-    return orders.filter((order: Order) => {
-      return order.items.some((item: OrderItem) => {
-        const menuItem = menuItems.find((m) => m.menuItemId === item.menuItemId);
-        return menuItem?.kitchenStations?.includes(selectedStation as KitchenStation);
-      });
+    if (selectedStation === "ALL") return activeOrders;
+
+    return activeOrders.filter((order: Order) => {
+      return order.items.some((item: OrderItem) => itemMatchesStation(item, selectedStation as KitchenStation));
     });
   }, [orders, selectedStation, menuItems]);
 
@@ -80,6 +134,36 @@ export const KDSPage = () => {
   const overdueCount = filteredOrders.filter((o: Order) => 
     (currentTime - new Date(o.createdAt).getTime()) / 60000 >= 20
   ).length;
+
+  let mainContent: ReactNode;
+  if (isLoading) {
+    mainContent = (
+      <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl">
+        Loading kitchen queue...
+      </div>
+    );
+  } else if (error) {
+    mainContent = (
+      <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl">
+        <div className="text-red-500 mb-4">Error loading orders:</div>
+        <div className="text-sm text-dark/50">{error}</div>
+      </div>
+    );
+  } else if (filteredOrders.length > 0) {
+    mainContent = (
+      <>
+        {filteredOrders.map((order: Order) => (
+          <KDSTicket key={order.orderId} order={order} onActionComplete={refetch} />
+        ))}
+      </>
+    );
+  } else {
+    mainContent = (
+      <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl border-4 border-dashed border-gray-200 rounded-3xl">
+        No orders for this station.
+      </div>
+    );
+  }
 
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -144,33 +228,37 @@ export const KDSPage = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-dark/70 font-semibold">
+              <Bell size={18} />
+              <span>{notifications.length} live</span>
+            </div>
             <Button variant="outline-danger" onClick={handleLogout} className="rounded-tr-4xl rounded-bl-4xl px-4 py-2">
               LOG OUT
             </Button>
           </div>
         </div>
 
+        <div className="fixed top-4 right-4 z-50 w-[24rem] max-w-[calc(100vw-2rem)] space-y-3 pointer-events-none">
+          {notifications.map((notification) => (
+            <div key={notification.id} className={`pointer-events-auto rounded-3xl border-2 px-4 py-4 shadow-2xl backdrop-blur-md transition-all duration-300 ${getNotificationTone(notification.kind)}`}>
+              <div className="flex items-start gap-3">
+                <div className="rounded-full bg-white/20 p-2 shrink-0">
+                  <BellRing size={18} />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-black uppercase tracking-[0.25em] opacity-80">Live alert</div>
+                  <div className="font-black text-lg leading-tight mt-1">{notification.title}</div>
+                  <p className="text-sm mt-2 opacity-90 leading-relaxed">{notification.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="flex-1 overflow-hidden">
           <ScrollArea direction="horizontal" className="h-full w-full pb-4">
             <div className="flex gap-8 h-full pl-2 pr-4 pt-2">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl">
-                  Loading kitchen queue...
-                </div>
-              ) : error ? (
-                <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl">
-                  <div className="text-red-500 mb-4">Error loading orders:</div>
-                  <div className="text-sm text-dark/50">{error}</div>
-                </div>
-              ) : filteredOrders.length > 0 ? (
-                filteredOrders.map((order: Order) => (
-                  <KDSTicket key={order.orderId} order={order} onActionComplete={refetch} />
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center w-full h-128 text-dark/30 font-bold text-2xl border-4 border-dashed border-gray-200 rounded-3xl">
-                  No orders for this station.
-                </div>
-              )}
+              {mainContent}
             </div>
           </ScrollArea>
         </div>

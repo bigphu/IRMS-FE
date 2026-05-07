@@ -9,6 +9,7 @@ import { CartItem } from "./CartItem";
 import { formatCurrency } from "@/utils/formatters";
 import type { OrderItem } from "@/types";
 import { orderService } from "@/services";
+import { useNavigate } from "react-router-dom";
 
 interface CartModalProps {
   onClose: () => void;
@@ -16,6 +17,7 @@ interface CartModalProps {
 
 export const CartModal = ({ onClose }: CartModalProps) => {
   const { items, totalItems, totalPrice, removeFromCart, clearCart } = useCartContext();
+  const navigate = useNavigate();
   const [editingItem, setEditingItem] = useState<OrderItem | null>(null);
   const [tableNumber, setTableNumber] = useState<string>("1");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -57,7 +59,14 @@ export const CartModal = ({ onClose }: CartModalProps) => {
           <div className="text-6xl mb-6">✓</div>
           <h2 className="text-dark text-3xl font-bold mb-2">Order Created!</h2>
           <p className="text-dark/70 text-lg mb-6">Table {tableNumber}</p>
-          <p className="text-highlight text-xl font-bold">{formatCurrency(totalPrice)}</p>
+          <div className="mt-8 flex gap-3">
+            <Button variant="full-primary" onClick={() => navigate("/orders")}>
+              VIEW ALL ORDERS
+            </Button>
+            <Button variant="outline" onClick={onClose}>
+              CLOSE
+            </Button>
+          </div>
         </div>
       </div>
     );
