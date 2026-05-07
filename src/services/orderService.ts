@@ -1,11 +1,31 @@
 import { api } from "@/utils/api";
-import type { Order } from "@/types";
+import type { Order, OrderItem } from "@/types";
 import type { AxiosResponse } from "axios";
 
 interface ApiResponse<T> {
   status: number;
   message: string;
   data: T;
+}
+
+interface CreateOrderRequest {
+  tableNumber: number;
+  items: Array<{
+    menuItemId: number;
+    quantity: number;
+    selectedOptionIds?: number[];
+    specialInstructions?: string;
+  }>;
+}
+
+interface UpdateOrderRequest {
+  tableNumber?: number;
+  items?: Array<{
+    menuItemId: number;
+    quantity: number;
+    selectedOptionIds?: number[];
+    specialInstructions?: string;
+  }>;
 }
 
 const unwrap = <T>(response: AxiosResponse<ApiResponse<T> | T>) => {
@@ -22,12 +42,31 @@ export const orderService = {
     return unwrap(response);
   },
 
-  createOrder: async (payload: Partial<Order>): Promise<Order> => {
+  createOrder: async (tableNumber: number, items: OrderItem[]): Promise<Order> => {
+    const payload: CreateOrderRequest = {
+      tableNumber,
+      items: items.map((item) => ({
+        menuItemId: item.menuItemId,
+        quantity: item.quantity,
+        selectedOptionIds: item.selectedOptionIds,
+        specialInstructions: item.specialInstructions,
+      })),
+    };
     const response = await api.post<ApiResponse<Order> | Order>("/orders/create", payload);
     return unwrap(response);
   },
 
-  updateOrder: async (id: number, payload: Partial<Order>): Promise<Order> => {
+  updateOrder: async (id: number, tableNumber?: number, items?: OrderItem[]): Promise<Order> => {
+    const payload: UpdateOrderRequest = {};
+    if (tableNumber !== undefined) payload.tableNumber = tableNumber;
+    if (items) {
+      payload.items = items.map((item) => ({
+        menuItemId: item.menuItemId,
+        quantity: item.quantity,
+        selectedOptionIds: item.selectedOptionIds,
+        specialInstructions: item.specialInstructions,
+      }));
+    }
     const response = await api.post<ApiResponse<Order> | Order>(`/orders/update/${id}`, payload);
     return unwrap(response);
   },

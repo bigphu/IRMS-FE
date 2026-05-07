@@ -17,14 +17,14 @@ export const MOCK_KDS_ORDERS: Order[] = [
         totalPrice: 210000,
         selectedOptions: [{ id: 201, name: "Extra Cheese", price: 30000 }],
         // THE FIX: Nest the food details inside the menuItem property!
-        menuItem: {
+          menuItem: {
           menuItemId: 2,
           name: "Pepperoni Pizza",
-          category: "PIZZAS",
+          category: "MAIN_COURSE",
           price: 180000,
           prepTime: 15,
           isAvailable: true,
-          kitchenStations: ["PIZZA", "PREP"],
+          kitchenStations: ["GENERAL"],
           imageUrl: "",
           description: "",
         },

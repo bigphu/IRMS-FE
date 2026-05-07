@@ -20,15 +20,45 @@ const buildPatchPath = (orderId: number, itemId: number, action: string) =>
   `/kds/orders/${orderId}/items/${itemId}/${action}`;
 
 export const kdsService = {
-  getQueue: async (): Promise<Order[]> => {
-    const response = await api.get<ApiResponse<Order[]> | Order[]>("/kds/queue");
+  getQueue: async (sortBy = "ESTIMATED_PREP_TIME", direction = "ASC"): Promise<Order[]> => {
+    const response = await api.get<ApiResponse<Order[]> | Order[]>(
+      `/kds/queue?sortBy=${sortBy}&direction=${direction}`
+    );
     return unwrap(response);
   },
 
-  getAlerts: async (thresholdMinutes?: number): Promise<Order[]> => {
-    const response = await api.get<ApiResponse<Order[]> | Order[]>("/kds/alerts", {
-      params: thresholdMinutes ? { thresholdMinutes } : {},
-    });
+  getAlerts: async (thresholdMinutes = 2): Promise<Order[]> => {
+    const response = await api.get<ApiResponse<Order[]> | Order[]>(
+      `/kds/alerts?thresholdMinutes=${thresholdMinutes}`
+    );
+    return unwrap(response);
+  },
+
+  startItem: async (orderId: number, itemId: number): Promise<Order> => {
+    const response = await api.patch<ApiResponse<Order> | Order>(
+      `/kds/orders/${orderId}/items/${itemId}/start`
+    );
+    return unwrap(response);
+  },
+
+  markItemReady: async (orderId: number, itemId: number): Promise<Order> => {
+    const response = await api.patch<ApiResponse<Order> | Order>(
+      `/kds/orders/${orderId}/items/${itemId}/ready`
+    );
+    return unwrap(response);
+  },
+
+  cancelItem: async (orderId: number, itemId: number): Promise<Order> => {
+    const response = await api.patch<ApiResponse<Order> | Order>(
+      `/kds/orders/${orderId}/items/${itemId}/cancel`
+    );
+    return unwrap(response);
+  },
+
+  completeItem: async (orderId: number, itemId: number): Promise<Order> => {
+    const response = await api.patch<ApiResponse<Order> | Order>(
+      `/kds/orders/${orderId}/items/${itemId}/complete`
+    );
     return unwrap(response);
   },
 

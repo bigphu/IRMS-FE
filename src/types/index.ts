@@ -2,18 +2,10 @@ export type Role = "MANAGER" | "CHEF" | "SERVER" | "CASHIER";
 export type KitchenStation =
   | "GRILL"
   | "FRYER"
-  | "SALAD"
   | "DESSERT"
   | "BEVERAGE"
-  | "PREP"
-  | "EXPEDITING"
-  | "COLD"
-  | "HOT"
-  | "PIZZA"
-  | "SUSHI"
-  | "BBQ"
-  | "PASTA"
-  | "VEGAN";
+  | "SALAD"
+  | "GENERAL";
 export type OrderStatus =
   | "UNPAID"
   | "PENDING"
@@ -21,7 +13,7 @@ export type OrderStatus =
   | "COMPLETED"
   | "OVERDUED"
   | "CANCELED";
-export type Category = "BURGERS" | "PIZZAS" | "DRINKS" | "DESSERTS" | "SALADS";
+export type Category = "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
 
 export interface User {
   id: string | number;
@@ -72,6 +64,7 @@ export interface OrderItem {
   selectedOptionIds?: number[];
   selectedOptions?: CustomizationOption[];
   totalPrice: number;
+  status?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
 }
 
 export interface Order {

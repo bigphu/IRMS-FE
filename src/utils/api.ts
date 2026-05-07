@@ -14,16 +14,20 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       Authorization: `Bearer ${token}`,
     } as AxiosRequestHeaders;
   }
+  console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`, { token: token ? "✓ present" : "✗ missing" });
   return config;
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(`[API] Response ${response.status} from ${response.config.url}`);
+    return response;
+  },
   (error) => {
+    console.error(`[API] Error ${error.response?.status} from ${error.config?.url}:`, error.response?.data || error.message);
     if (error.response?.status === 401) {
       globalThis.localStorage.removeItem("irms_access_token");
       globalThis.localStorage.removeItem("irms_user");
-      // Avoid full-page reload loops on auth verification failures.
       if (globalThis.location.pathname !== "/login") {
         globalThis.history.pushState({}, "", "/login");
         globalThis.dispatchEvent(new PopStateEvent("popstate"));

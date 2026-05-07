@@ -20,4 +20,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, './src'), // Maps '@' to your 'src/' folder
     },
   },
+  define: {
+    global: 'globalThis',
+  },
 })

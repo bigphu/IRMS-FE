@@ -5,13 +5,13 @@ export const MENU_ITEMS: MenuItem[] = [
   { 
     menuItemId: 1, 
     name: 'Crabstick Cocktail Pizza', 
-    category: 'PIZZAS', // Updated to match Category type
+    category: 'MAIN_COURSE',
     price: 179000, 
     description: 'An innovative pizza topped with crabstick cocktail, mozzarella, and a blend of herbs, offering a unique seafood twist on a classic favorite.',
     imageUrl: CrabstickCocktail,
     prepTime: 12,
     isAvailable: true,
-    kitchenStations: ['PREP', 'PIZZA'],
+    kitchenStations: ['GENERAL'],
     customizationOptions: [
       { id: 101, name: 'Extra Cheese', price: 20000 },
       { id: 102, name: 'No Onions', price: 0 },
@@ -33,13 +33,13 @@ export const MENU_ITEMS: MenuItem[] = [
   { 
     menuItemId: 2, 
     name: 'Pepperoni Pizza', 
-    category: 'PIZZAS', // Updated to match Category type
+    category: 'MAIN_COURSE',
     price: 179000, 
     description: 'A classic pepperoni pizza with a crispy crust and melted mozzarella.',
     imageUrl: PepperoniPizza,
     prepTime: 10,
     isAvailable: true,
-    kitchenStations: ['PIZZA'],
+    kitchenStations: ['GENERAL'],
     customizationOptions: [
       { id: 201, name: 'Extra Cheese', price: 20000 },
       { id: 203, name: 'Extra Pepperoni', price: 35000 }
@@ -48,13 +48,13 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     menuItemId: 3,
     name: 'Classic Cheeseburger',
-    category: 'BURGERS', // Updated to match Category type
+    category: 'MAIN_COURSE',
     price: 120000,
     description: 'A delicious classic cheeseburger with a juicy patty and fresh vegetables.',
     imageUrl: BaconCheeseBurger,
     prepTime: 8,
     isAvailable: true,
-    kitchenStations: ['GRILL', 'PREP'],
+    kitchenStations: ['GRILL'],
     customizationOptions: [
       { id: 301, name: 'Extra Patty', price: 40000 },
       { id: 302, name: 'No Pickles', price: 0 }
