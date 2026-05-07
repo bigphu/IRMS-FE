@@ -19,7 +19,6 @@ const CartProvider = ({ children }: CartProviderProps) => {
   const totalPrice = useMemo(() => {
     return items.reduce((sum, item) => sum + item.totalPrice, 0);
   }, [items]);
-
   // --- ACTIONS ---
   const addToCart = (newItem: OrderItem) => {
     setItems((prevItems) => {

@@ -7,11 +7,10 @@ export type KitchenStation =
   | "SALAD"
   | "GENERAL";
 export type OrderStatus =
-  | "UNPAID"
   | "PENDING"
-  | "IN_PROGRESS"
+  | "COOKING"
+  | "READY"
   | "COMPLETED"
-  | "OVERDUED"
   | "CANCELED";
 export type Category = "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
 
@@ -73,7 +72,8 @@ export interface Order {
   totalPrice: number;
   status: OrderStatus;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
+  completedAt?: string;
 }
 
 export interface Product {

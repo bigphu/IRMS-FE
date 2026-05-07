@@ -19,29 +19,37 @@ const TicketRow = ({ item, textColor }: { item: OrderItem; textColor: string }) 
     item.selectedOptionIds?.includes(o.id)
   ) || []);
 
+  const getStatusStyles = (status?: string) => {
+    switch (status) {
+      case "READY":
+        return "bg-primary text-light";
+      case "COOKING":
+        return "bg-highlight text-dark";
+      case "COMPLETED":
+        return "bg-success text-light";
+      default:
+        return "bg-gray-300 text-dark";
+    }
+  };
+
   const statusBadge = item.status && item.status !== "PENDING" ? (
-    <span className={`text-xs font-bold px-2 py-1 rounded ml-auto ${
-      item.status === "READY" ? "bg-primary text-light" :
-      item.status === "COOKING" ? "bg-highlight text-dark" :
-      item.status === "COMPLETED" ? "bg-success text-light" :
-      "bg-gray-300 text-dark"
-    }`}>
+    <span className={`text-xs font-bold px-2 py-1 rounded ml-auto ${getStatusStyles(item.status)}`}>
       {item.status}
     </span>
   ) : null;
 
   return (
-    <div className="flex items-start gap-4">
+    <div className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm">
       <span className={`${textColor} font-bold text-xl min-w-10`}>
         {item.quantity}x
       </span>
-      <div className="flex flex-col flex-1">
-        <div className="flex items-center gap-2">
-          <span className="text-dark font-bold text-lg leading-tight">{itemName}</span>
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-dark font-bold text-lg leading-tight truncate">{itemName}</span>
           {statusBadge}
         </div>
         {selectedOptions.length > 0 && (
-          <span className="text-dark/70 text-sm mt-1">
+          <span className="text-dark/70 text-sm mt-1 truncate">
             {selectedOptions.map(opt => opt.name).join(", ")}
           </span>
         )}
@@ -62,19 +70,12 @@ const getTicketTheme = (elapsedMinutes: number) => {
 };
 
 export const KDSTicket = ({ order, onActionComplete }: KDSTicketProps) => {
-  const { elapsedTime, elapsedMinutes } = useTicketTimer(order.createdAt);
+  const { elapsedTime, elapsedMinutes } = useTicketTimer(order.createdAt, order.status);
   const theme = getTicketTheme(elapsedMinutes);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Safely handle missing items array
   const items = order.items || [];
-
-  // Find the first incomplete item
-  const incompleteItem = items.find(i => i.status !== "COMPLETED");
-  
-  // Determine button state based on item progress
-  const isItemReady = incompleteItem?.status === "READY";
-  const isItemCooking = incompleteItem?.status === "COOKING";
 
   const uniqueStations = Array.from(
     new Set(items.flatMap((item) => {
@@ -83,18 +84,10 @@ export const KDSTicket = ({ order, onActionComplete }: KDSTicketProps) => {
     }))
   ).join(", ");
 
-  const handleMarkReady = async () => {
-    if (!incompleteItem) return;
-    
+  const handleMarkReady = async (itemId: number) => {
     setIsUpdating(true);
     try {
-      if (isItemReady) {
-        // If already READY, complete the item
-        await kdsService.completeItem(order.orderId, incompleteItem.orderItemId);
-      } else {
-        // Mark as READY
-        await kdsService.markItemReady(order.orderId, incompleteItem.orderItemId);
-      }
+      await kdsService.markItemReady(order.orderId, itemId);
       onActionComplete?.();
     } catch (err) {
       console.error("Failed to update item:", err);
@@ -103,19 +96,17 @@ export const KDSTicket = ({ order, onActionComplete }: KDSTicketProps) => {
     }
   };
 
-  const handleHold = async () => {
-    if (!incompleteItem) return;
-    
+  {/*const handleMarkCooking = async (orderId: number) => {
     setIsUpdating(true);
     try {
-      await kdsService.startItem(order.orderId, incompleteItem.orderItemId);
+      await kdsService.markOrderCooking(orderId);
       onActionComplete?.();
     } catch (err) {
-      console.error("Failed to hold item:", err);
+      console.error("Failed to update order:", err);
     } finally {
       setIsUpdating(false);
     }
-  };
+  }*/}
 
   return (
     <div className="flex flex-col w-80 shrink-0 drop-shadow-md h-128">
@@ -135,33 +126,34 @@ export const KDSTicket = ({ order, onActionComplete }: KDSTicketProps) => {
       <div className="bg-surface border-4 border-dashed border-gray-200 border-t-0 rounded-bl-3xl rounded-br-xl flex-1 flex flex-col p-5 -mt-2 pt-6 relative">
         <div className="flex-1 overflow-hidden -mr-2">
           <ScrollArea direction="vertical" className="h-full pr-4 pb-2">
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
               {items.map((item) => (
-                <TicketRow key={item.orderItemId} item={item} textColor={theme.text} />
+                <div key={item.orderItemId} className="flex flex-col gap-2">
+                  <TicketRow item={item} textColor={theme.text} />
+                  <Button
+                    variant="full-primary"
+                    onClick={() => handleMarkReady(item.orderItemId)}
+                    disabled={isUpdating || item.status === "READY" || item.status === "COMPLETED" || item.status === "CANCELED"}
+                    className="w-full py-3 text-lg"
+                  >
+                    SERVE
+                  </Button>
+                </div>
               ))}
+              {/*Start cooking button for pending items*/}
+              {/*{items.some(item => item.status === "PENDING") && (
+                <Button
+                  variant="outline-primary"
+                  onClick={() => handleMarkCooking(order.orderId)}
+                  disabled={isUpdating}
+                  className="w-full py-3 text-lg"
+                >
+                  START COOKING
+                </Button>
+              )}
+              */}
             </div>
           </ScrollArea>
-        </div>
-
-        {/* ACTIONS: Dramatically simplified using your Button variants! */}
-        <div className="flex gap-3 mt-4 pt-4 border-t-2 border-gray-100">
-          <Button 
-            variant={`full-${theme.color}`}
-            onClick={handleMarkReady}
-            disabled={isUpdating || !incompleteItem}
-            className="flex-1 py-3 text-lg"
-          >
-            {isUpdating ? "..." : (isItemReady ? "COMPLETE" : "READY")}
-          </Button>
-          
-          <Button 
-            variant={`outline-${theme.color}`}
-            onClick={handleHold}
-            disabled={isUpdating || !incompleteItem || isItemCooking}
-            className="flex-1 py-3 text-lg bg-surface"
-          >
-            {isUpdating ? "..." : "HOLD"}
-          </Button>
         </div>
       </div>
     </div>

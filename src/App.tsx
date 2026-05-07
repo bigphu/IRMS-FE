@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components";
 import LoginPage from "@/features/auth/LoginPage";
 import MenuPage from "@/features/menu/MenuPage";
 import KDSPage from "@/features/kds/KDSPage";
+import OrdersPage from "@/features/orders/OrdersPage";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/menu" element={<MenuPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
               </Route>
 
               <Route element={<ProtectedRoute allowedRoles={["CHEF", "MANAGER"]} />}>
