@@ -1,23 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.cdnfonts.com/css/helvetica-neue-55');
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
+  /* Surface Colors */
   --color-primary: #118f5b;
-  --color-highlight: #ff6b15;
+  --color-secondary: #2d3436;
+  --color-neutral: #f8f9fa;
+  --color-accent: #f5a623;
   --color-danger: #da2727;
-  --color-screen: #e0e0e0;
   --color-surface: #ffffff;
-  --color-background: #e0e0e0;
-  --color-light: #ffffff;
-  --color-dark: #1c1c1c;
 
-  --color-scrollbar-bg: rgba(17, 143, 91, 0.2);
+  /* High-Contrast Text Colors */
+  --color-on-primary: #ffffff;
+  --color-on-secondary: #f8f9fa;
+  --color-on-neutral: #2d3436;
+  --color-on-accent: #ffffff;
+  --color-on-danger: #ffffff;
+  --color-on-surface: #2d3436;
 
   /* Border Radius */
   --radius-card: 2rem;
 
   /* Default Font */
-  --font-family: 'Inter', sans-serif;
+  --font-sans: "Impact", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 @utility no-scrollbar {
@@ -28,24 +35,8 @@
   scrollbar-width: none;
 }
 
-@utility custom-scrollbar {
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-scrollbar-bg) transparent;
-
-  /* WebKit (Chrome, Safari, Edge) */
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--color-scrollbar-bg);
-    border-radius: 9999px; /* Fully rounded */
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-primary);
+@layer base {
+  section {
+    scroll-margin-top: 0rem; /* Adjust based on your layout */
   }
 }

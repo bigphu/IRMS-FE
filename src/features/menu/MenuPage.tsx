@@ -1,224 +1,143 @@
-// src/features/menu/MenuPage.tsx
-import { useState, useMemo } from "react";
-import type { Category, MenuItem as MenuItemType } from "@/types";
-
-// Components
-import Navbar from "@/components/layout/Navbar";
-import type { NavItem } from "@/components/layout/Navbar";
-import { ScrollArea, Button } from "@/components";
-import { useAuth } from "@/hooks";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MenuItem } from "@/features/menu/components/MenuItem";
-import { default as ItemContainer } from "@/features/item/components/ItemContainer";
-import { CartModal } from "@/features/cart/components/CardModal";
+import { NavBar, ScrollArea, DisplayBox, Button } from "../../components";
+import { MenuItemCard } from "../../features";
+import { useScrollSpy } from "../../hooks/useScrollSpy";
+import { useMenu } from "./useMenu";
+import { categoryItems } from "../../utils";
+import { LoaderCircleIcon, XCircleIcon, ShoppingCartIcon, NotebookPenIcon } from "lucide-react";
 
-// Context & Data
-import { useCartContext } from "@/contexts/CartContext";
-import { useMenuContext } from "@/contexts/MenuContext";
-import { formatCurrency } from "@/utils/formatters";
+import backGroundPattern from "../../assets/background-pattern.webp";
 
-const MenuPage = () => {
-  // --- STATE ---
-  const [selectedCategory, setSelectedCategory] = useState<Category | "ALL">("ALL");
-  const [activeItem, setActiveItem] = useState<MenuItemType | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false); 
+import { CustomizationModal } from "../item";
+import type { MenuItem } from "../../types/api";
 
-  // --- GLOBAL CONTEXT ---
-  const { items: cartItems, totalItems, totalPrice } = useCartContext();
+import { useAppSelector } from "../../store/hooks";
 
-  const { menuItems, categories, isLoading } = useMenuContext();
+const categories = categoryItems.map((cat) => cat.id);
 
-  // --- DERIVED DATA ---
-  const filteredItems = useMemo(() => {
-    return menuItems.filter(
-      (item) =>
-        selectedCategory === "ALL" || item.category === selectedCategory,
-    );
-  }, [menuItems, selectedCategory]);
-
-  // Group items by category for section-based display
-  const itemsByCategory = useMemo(() => {
-    const grouped: Record<Category, MenuItemType[]> = {
-      APPETIZER: [],
-      MAIN_COURSE: [],
-      DESSERT: [],
-      BEVERAGE: [],
-    };
-
-    menuItems.forEach((item) => {
-      if (item.category in grouped) {
-        grouped[item.category as Category].push(item);
-      }
-    });
-
-    return grouped;
-  }, [menuItems]);
-
-  const getCartCountForItem = (menuItemId: number) => {
-    return cartItems
-      .filter((cartItem) => cartItem.menuItemId === menuItemId)
-      .reduce((sum, cartItem) => sum + cartItem.quantity, 0);
-  };
-
-  const { logout, user } = useAuth();
+export const MenuPage = () => {
   const navigate = useNavigate();
+  const cartItems = useAppSelector((state) => state.cart.items);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } finally {
-      navigate("/login", { replace: true });
-    }
-  };
+  const itemCount = cartItems.reduce<number>((sum, item) => sum + item.quantity, 0)
 
-  const handleViewOrders = () => {
-    navigate("/orders");
-  };
+  const selectedCategory = useScrollSpy(categories);
+  const categoryQueries = useMenu(categories);
 
-  // Map application categories to the generic NavItem format
-  const menuNavItems: NavItem[] = categories.map((cat) => ({
-    id: cat.category,
-    label: cat.label,
-    icon: cat.icon,
-  }));
-
-  // Determine which categories to show based on filter
-  const categoriesToDisplay: Category[] = selectedCategory === "ALL"
-    ? (["APPETIZER", "MAIN_COURSE", "DESSERT", "BEVERAGE"] as Category[])
-    : [selectedCategory as Category];
-
-  const displayCategories = categories.filter(
-    (cat) =>
-      cat.category !== "ALL" &&
-      categoriesToDisplay.includes(cat.category as Category)
-  );
+  const [activeMenuItem, setActiveMenuItem] = useState<MenuItem | null>(null);
 
   return (
-    <div className="bg-surface flex h-screen w-screen overflow-hidden">
-      
-      {/* --- 1. SIDEBAR NAVBAR --- */}
-      <Navbar
-        items={menuNavItems}
-        selectedValue={selectedCategory}
-        onValueChange={(val) => setSelectedCategory(val as Category | "ALL")} 
-      />
+    <div className="relative">
+      <div className="z-10 relative w-full h-full">
+        <NavBar selectedId={selectedCategory!} />
 
-      {/* --- 2. MAIN CONTENT AREA --- */}
-      <div className="flex flex-col flex-1 h-full ml-24 relative bg-surface">
-        
-        {/* Scrollable Category Sections */}
-        <div className="flex-1 overflow-y-auto pl-10 pr-4">
-          <div className="py-8 space-y-8">
-            {isLoading ? (
-              <div className="w-full h-full flex items-center justify-center text-xl font-bold text-gray-400">
-                Loading menu...
-              </div>
-            ) : filteredItems.length === 0 ? (
-              <div className="w-full h-full flex items-center justify-center text-xl font-bold text-gray-400">
-                No items found in this category.
-              </div>
-            ) : (
-              displayCategories.map((categoryDetail) => {
-                const items = itemsByCategory[categoryDetail.category as Category] || [];
-                if (items.length === 0) return null;
+        {/* Added overflow-hidden to ensure the background image respects the rounded-l-3xl corners */}
+        <div className="relative z-10 ml-24 rounded-l-2xl h-screen w-auto bg-white overflow-hidden">
+          {/* Moved background pattern here, with z-0 so it sits behind the ScrollArea */}
+          <div
+            className="absolute inset-0 h-full w-full z-0 opacity-8 bg-repeat pointer-events-none"
+            style={{ backgroundImage: `url(${backGroundPattern})` }}
+          />
+
+          <ScrollArea direction="vertical">
+            {/* Inner wrapper to push content down and cause vertical overflow */}
+            {/* Added relative z-10 to ensure content stays above the background pattern */}
+            <div className="relative z-10 flex flex-col gap-8 pt-15 pb-30 pl-16">
+              {categoryItems.map((cat, index) => {
+                const query = categoryQueries[index];
 
                 return (
-                  <div key={categoryDetail.category} className="space-y-4">
-                    {/* Category Header */}
-                    <div className="flex items-center gap-3">
-                      <div className="text-highlight">{categoryDetail.icon}</div>
-                      <h2 className="text-2xl font-bold text-dark">
-                        {categoryDetail.label}
+                  <section
+                    id={cat["id"]}
+                    key={`cat-${cat["id"]}`}
+                    className="flex flex-col scroll-mt-10"
+                  >
+                    <div className="flex justify-start pr-30 w-full h-full">
+                      <h2 className="flex gap-12 items-center text-7xl text-primary">
+                        <div>
+                          {`${cat["label"]}`}
+                        </div>
+                        <div className="scale-250">
+                          {cat["icon"]}
+                        </div>
                       </h2>
-                      <div className="flex-1 h-0.5 bg-gray-200/50 ml-4"></div>
                     </div>
 
-                    {/* Horizontal Scroll Section */}
-                    <ScrollArea
-                      className="w-full"
-                      direction="horizontal"
-                    >
-                      <div className="flex gap-4 pb-4">
-                        {items.map((item) => (
-                          <div key={item.menuItemId} className="shrink-0">
-                            <MenuItem
-                              item={item}
-                              cartCount={getCartCountForItem(item.menuItemId)}
-                              onClick={(clickedItem) => setActiveItem(clickedItem)}
+                    <div className="h-125 w-full">
+                      {query!.isLoading ? (
+                        <div className="flex flex-col justify-center items-center rounded-2xl w-full h-full bg-neutral">
+                          <div className="w-fit h-fit">
+                            <DisplayBox
+                              variant="loading-secondary"
+                              icon={<LoaderCircleIcon />}
+                              value={`Loading ${cat["label"]}...`}
                             />
                           </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </div>
+                        </div>
+                      ) : query!.isError ? (
+                        <div className="flex flex-col justify-center items-center rounded-2xl w-full h-full bg-neutral">
+                          <div className="w-fit h-fit">
+                            <DisplayBox
+                              variant="danger"
+                              icon={<XCircleIcon />}
+                              value={`Failed to load ${cat["label"]}`}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <ScrollArea direction="horizontal">
+                          <div className="flex gap-4 pt-8 px-10">
+                            {query!.data?.map((item, index) => (
+                              <MenuItemCard
+                                key={`dish-${index}`}
+                                item={item}
+                                onClick={() => setActiveMenuItem(item)}
+                              />
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      )}
+                    </div>
+                  </section>
                 );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* --- FOOTER: TOTAL & VIEW CART --- */}
-        <div className="flex h-28 w-full shrink-0 items-center justify-end gap-16s border-t-2 border-gray-200/50 pt-6 pr-12 pb-6 pl-10 bg-surface z-10">
-          
-          <div className="flex items-end gap-2">
-            <span className="text-dark text-xl font-black tracking-wider">
-              TOTAL:
-            </span>
-            <span className="text-highlight text-4xl font-black">
-              {formatCurrency(totalPrice)}
-            </span>
-          </div>
-
-          <Button
-            variant="full-primary"
-            onClick={() => setIsCartOpen(true)} 
-            className="flex items-center gap-6 rounded-tr-4xl rounded-bl-4xl px-6 py-4 shadow-xl"
-          >
-            <span className="text-xl font-black tracking-wider">VIEW CART</span>
-            <div className="bg-surface text-primary border-primary rounded-full border-2 px-4 py-1 text-lg font-bold">
-              {totalItems}
+              })}
             </div>
-          </Button>
-          {(user?.role === "SERVER" || user?.role === "MANAGER") && (
-            <Button
-              variant="outline-secondary"
-              onClick={handleViewOrders}
-              className="rounded-tr-4xl rounded-bl-4xl px-6 py-4"
-            >
-              VIEW ORDERS
+          </ScrollArea>
+          
+          {/* View Order and View Cart buttons */}
+          <div className="absolute flex justify-center items-center gap-8 z-10 bottom-1/20 right-1/20 text-2xl">
+            <Button onClick={() => navigate("/cart")}>
+              <div className="flex items-center justify-center gap-4">
+                <ShoppingCartIcon />
+                <p>
+                  View Cart
+                </p>
+                <p className="bg-surface text-primary px-2 rounded-2xl flex justify-center items-center">
+                  {itemCount}
+                </p>
+              </div>
             </Button>
-          )}
-          <Button
-            variant="full-secondary"
-            onClick={() => navigate("/orders")}
-            className="rounded-tr-4xl rounded-bl-4xl px-6 py-4 shadow-xl"
-          >
-            ALL ORDERS
-          </Button>
-          <Button
-            variant="outline-danger"
-            onClick={handleLogout}
-            className="rounded-tr-4xl rounded-bl-4xl px-6 py-4"
-          >
-            LOG OUT
-          </Button>
+
+            <Button variant="outline-accent">
+              <div className="flex items-center justify-center gap-4">
+                <NotebookPenIcon />
+                <p>
+                  Track Orders
+                </p>
+              </div>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* --- 3. OVERLAYS & MODALS --- */}
-      {activeItem && (
-        <ItemContainer 
-          item={activeItem} 
-          onClose={() => setActiveItem(null)} 
+      {activeMenuItem && (
+        <CustomizationModal
+          menuItem={activeMenuItem}
+          existingItem={null}
+          onExit={() => setActiveMenuItem(null)}
         />
       )}
-
-      {isCartOpen && (
-        <CartModal onClose={() => setIsCartOpen(false)} />
-      )}
-      
     </div>
   );
 };
-
-export default MenuPage;

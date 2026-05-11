@@ -1,178 +1,75 @@
-# IRMS Frontend (IRMS-FE)
+# React + TypeScript + Vite
 
-A React + TypeScript + Vite frontend for the Integrated Restaurant Management System (IRMS). Provides menu browsing, cart management, and kitchen display system (KDS) interfaces with JWT-based authentication and Axios backend integration.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- **JWT Authentication** – Login/logout with token-based auth, auto-redirect on 401
-- **Menu Management** – Dynamic menu loading from backend with category filtering
-- **Shopping Cart** – Add/edit/remove items with customization options
-- **Kitchen Display System (KDS)** – Real-time order queue with prep time tracking
-- **Context-based State** – Auth, Menu, and Cart context providers for global state
-- **Responsive UI** – Tailwind CSS with custom theming
-- **Type-safe** – Full TypeScript coverage with strict mode enabled
-- **React Compiler** – Optimized rendering with Babel preset
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Getting Started
+## React Compiler
 
-### Prerequisites
+The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
 
-- Node.js 20+
-- npm or yarn
+Note: This will impact Vite dev & build performances.
 
-### Installation
+## Expanding the ESLint configuration
 
-```bash
-npm install
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-### Environment Setup
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-Create a `.env` file in the root:
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-```env
-VITE_API_URL=http://localhost:8080/api
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-Or use `.env.development` for dev and `.env.production` for production builds.
-
-### Development
-
-```bash
-npm run dev
-```
-
-Runs on `http://localhost:5173` by default.
-
-### Build
-
-```bash
-npm run build
-```
-
-Outputs to `dist/`.
-
-### Preview
-
-```bash
-npm run preview
-```
-
-Preview the production build locally.
-
-## Project Structure
-
-```
-src/
-├── components/          # Reusable UI components
-│   ├── layout/         # Navigation, protected routes
-│   └── ui/             # Buttons, inputs, scroll areas
-├── contexts/           # React contexts & providers
-│   ├── AuthContext.tsx
-│   ├── MenuContext.ts
-│   └── CartContext.ts
-├── features/           # Page-level features
-│   ├── auth/           # Login page
-│   ├── menu/           # Menu browsing page
-│   ├── kds/            # Kitchen display system
-│   ├── cart/           # Cart components
-│   └── item/           # Item details/customization
-├── hooks/              # Custom React hooks
-│   ├── useAuth.ts      # Auth logic
-│   ├── useMenuQuery.ts # Menu context access
-│   ├── useKDSQuery.ts  # KDS queue fetching
-│   └── useItemQuery.ts
-├── services/           # API client services
-│   ├── authService.ts
-│   ├── menuService.ts
-│   ├── kdsService.ts
-│   └── orderService.ts
-├── types/              # TypeScript types & interfaces
-├── utils/              # Utilities (API client, formatters)
-└── data/               # Mock data for development
-```
-
-## Backend API Integration
-
-All API calls go through `src/utils/api.ts`, an Axios instance configured with:
-
-- **Base URL** – `VITE_API_URL` env variable (default: `http://localhost:8080/api`)
-- **Credentials** – `withCredentials: true` for cookies
-- **JWT Header** – Automatically adds `Authorization: Bearer <token>` if token exists in localStorage
-- **Error Handling** – Redirects to `/login` on 401 (Unauthorized)
-
-### Available Services
-
-**Auth Service** (`authService`)
-- `login(credentials)` – POST `/auth/login`
-- `logout()` – POST `/auth/logout`
-- `verify()` – GET `/auth/me` or `/auth/verify`
-
-**Menu Service** (`menuService`)
-- `getAllMenuItems()` – GET `/menu/all`
-- `getMenuItemsByCategory(category)` – GET `/menu/items-by-category/{category}`
-- `getMenuItemById(id)` – GET `/menu/item/{id}`
-
-**KDS Service** (`kdsService`)
-- `getQueue()` – GET `/kds/queue`
-- `getAlerts(thresholdMinutes?)` – GET `/kds/alerts`
-
-**Order Service** (`orderService`)
-- `getOrder(id)` – GET `/orders/get/{id}`
-- `createOrder(payload)` – POST `/orders/create`
-- `updateOrder(id, payload)` – POST `/orders/update/{id}`
-- `cancelOrder(id)` – POST `/orders/cancel/{id}`
-
-## Hooks
-
-**useAuth()**
-```ts
-const { user, isAuthenticated, isLoading, login, logout } = useAuth();
-```
-
-**useMenuQuery()**
-```ts
-const { menuItems, categories, isLoading } = useMenuQuery();
-```
-
-**useKDSQuery()**
-```ts
-const { orders, isLoading } = useKDSQuery();
-```
-
-## Docker Setup
-
-Build and run with Docker Compose:
-
-```bash
-docker-compose up
-```
-
-This will start:
-- **Frontend** on `http://localhost:5173`
-- **Backend** on `http://localhost:8080`
-
-Services communicate within the `irms-network` bridge network.
-
-## Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_API_URL` | `http://localhost:8080/api` | Backend API base URL |
-
-Production builds use `/api` for relative paths when deployed behind a proxy.
-
-## Key Dependencies
-
-- **React 19** – UI framework
-- **Vite 8** – Build tool with HMR
-- **TypeScript** – Type safety
-- **React Router 7** – Client-side routing
-- **Axios 1.15** – HTTP client
-- **Tailwind CSS 4** – Styling
-- **Lucide React** – Icons
-- **GSAP 3** – Animations
-
-## License
-
-Internal project for IRMS system.

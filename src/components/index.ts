@@ -1,8 +1,6 @@
-export { default as Navbar } from './layout/Navbar';
-export { default as Button } from './ui/Button';
-export { default as DisplayBox } from './ui/DisplayBox';
-export { default as InputBox } from './ui/InputBox';
-export { default as ScrollArea } from './ui/ScrollArea';
-export { default as ProtectedRoute } from './layout/ProtectedRoute';
-// export { default as MenuItemCard } from './MenuItemCard';
-// export { default as OrderSummary } from './OrderSummary';
+export * from "./layout/NavBar";
+export * from "./layout/ProtectedRoute"
+export * from "./ui/Button";
+export * from "./ui/DisplayBox";
+export * from "./ui/InputBox";
+export * from "./ui/ScrollArea";

@@ -1,95 +1,108 @@
-// src/components/ui/InputBox.tsx
-import React, { useState } from "react";
+import { useState, type InputHTMLAttributes, type ReactNode } from "react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
-// 1. Extend standard input attributes (Omit value/onChange since we handle them custom)
-export interface InputBoxProps extends Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  "onChange" | "value"
-> {
-  type?: string;
-  content?: string;
-  label?: string; // 2. Add label support
-  onChange?: (newValue: string) => void;
-  className?: string;
-  containerClassName?: string;
-  min?: number;
+export interface InputBoxProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
+  icon?: ReactNode;
+  multiline?: boolean;
+  rows?: number;
+  cols?: number;
+  label?: string;
+  variant?: "primary" | "secondary" | "accent" | "danger"; // <-- Replaced labelColor with variant
 }
 
-const InputBox = ({
-  type = "text",
-  content = "",
-  label,
-  onChange,
-  className = "",
-  containerClassName = "",
-  min,
-  ...props
+// 1. Map the variants to their specific colors for the label, icon, and ring
+const variantStyles = {
+  primary: {
+    label: "text-primary",
+    icon: "text-primary",
+    ring: "focus-within:ring-primary",
+  },
+  secondary: {
+    label: "text-secondary",
+    icon: "text-secondary",
+    ring: "focus-within:ring-secondary",
+  },
+  accent: {
+    label: "text-accent",
+    icon: "text-accent",
+    ring: "focus-within:ring-accent",
+  },
+  danger: {
+    label: "text-danger",
+    icon: "text-danger",
+    ring: "focus-within:ring-danger",
+  },
+};
+
+export const InputBox = ({ 
+  icon, 
+  multiline = false, 
+  rows = 3, 
+  cols = 3,
+  label, 
+  variant = "primary", 
+  className = "", 
+  ...props 
 }: InputBoxProps) => {
-  const [localValue, setLocalValue] = useState(content);
-  const [fallbackValue, setFallbackValue] = useState(content);
-  const [prevContent, setPrevContent] = useState(content);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  if (prevContent !== content) {
-    setLocalValue(content);
-    setFallbackValue(content);
-    setPrevContent(content);
-  }
+  // 2. Extract the active variant styles
+  const activeVariant = variantStyles[variant];
 
-  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (content.trim() !== "") {
-      setFallbackValue(content);
-    }
-    props.onFocus?.(e); // Allow parent to still use onFocus
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    if (
-      min !== undefined &&
-      (type === "number" || type === "positive-integer")
-    ) {
-      const numValue = parseInt(value, 10);
-      if (!isNaN(numValue) && numValue < min) {
-        value = min.toString();
-      }
-    }
-    setLocalValue(value);
-    onChange?.(value);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (localValue.trim() === "") {
-      setLocalValue(fallbackValue);
-      onChange?.(fallbackValue);
-    }
-    props.onBlur?.(e); // Allow parent to still use onBlur
-  };
+  const borderStyling = "border-2 rounded-md shadow-md border-secondary";
+  // 3. Hardcoded text-secondary for the typed value!
+  const colorStyling = "bg-neutral text-secondary"; 
+  // 4. Injected the dynamic ring color
+  const focusStyling = `focus-within:ring-2 ${activeVariant.ring} ring-offset-2 transition-all`; 
+  
+  const alignment = multiline ? "items-start" : "items-center";
+  const textAlign = icon ? "text-left" : "text-center";
+  const sharedInputStyling = `w-full bg-transparent outline-none font-mono font-light placeholder:text-secondary/50 ${textAlign}`;
 
   return (
-    // 3. Added a wrapper to stack the label and the input box
-    <div className={`flex w-full flex-col gap-1 ${containerClassName}`}>
+    <div className={`flex w-full flex-col gap-1 ${className}`}>
+      
+      {/* 5. Apply the variant label color */}
       {label && (
-        <label htmlFor={props.id} className="text-primary ml-1 text-sm font-bold">
+        <label className={`text-sm font-mono font-bold ${activeVariant.label}`}>
           {label}
         </label>
       )}
 
-      <div
-        className={`bg-light border-primary focus-within:ring-primary box-border flex w-full items-center justify-center rounded-tr-xl rounded-bl-xl border-2 shadow-md ring-offset-2 transition-shadow focus-within:ring-2`}
-      >
-        <input
-          type={type === "positive-integer" ? "number" : type}
-          value={localValue}
-          onFocus={handleFocus}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          min={min}
-          {...props} // 4. This now safely spreads id, placeholder, required, etc!
-          className={`text-dark w-full h-full placeholder:text-primary/50 [appearance:textfield] border-0 bg-transparent font-medium outline-none placeholder:font-light focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${className} ${label ? "text-left" : "text-center"}`}
-        />
+      <div className={`box-border flex w-full px-6 py-3 gap-4 ${alignment} ${colorStyling} ${borderStyling} ${focusStyling}`}>
+        
+        {/* 6. Apply the variant icon color (Lucide icons inherit the text color automatically) */}
+        {icon && (
+          <div className={`shrink-0 ${activeVariant.icon} ${multiline ? 'mt-1' : ''}`}>
+            {icon}
+          </div>
+        )}
+
+        {multiline ? (
+          <textarea
+            {...props}
+            rows={rows}
+            cols={cols}
+            className={`${sharedInputStyling} resize-none`} 
+          />
+        ) : (
+          <input
+            {...props}
+            type={showPassword ? "text" : props.type}
+            className={`${sharedInputStyling} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+          />
+        )}
+
+        {props.type === "password" && !multiline && (
+          <button 
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className={`cursor-pointer text-secondary/70 hover:${activeVariant.icon} transition-colors focus:outline-none`}
+          >
+            {showPassword ? <EyeIcon /> : <EyeOffIcon />}
+          </button>
+        )}
       </div>
     </div>
   );
 };
-
-export default InputBox;

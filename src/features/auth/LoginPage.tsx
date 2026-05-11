@@ -1,93 +1,103 @@
-// src/features/auth/LoginPage.tsx
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Button, InputBox } from "@/components";
-import { useAuth } from "@/hooks";
+import { Button, InputBox } from "../../components";
+import { MailIcon, LockIcon } from "lucide-react";
 
-const LoginPage = () => {
+import { useAppDispatch } from "../../store/hooks";
+import { setCredentials } from "../../store/slices/authSlice";
+
+import { useLogin } from "./useLogin";
+
+import type { User, LoginPayload, UserRole } from "../../types/api";
+
+export const LoginPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const dispatch = useAppDispatch();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const submitLogin = async () => {
+  const { mutateAsync: loginMutation, isPending } = useLogin();
+
+  const handleLoginSubmit = async () => {
     setErrorMessage(null);
-    setIsSubmitting(true);
 
     try {
-      const user = await login({ email, password });
-      if (user.role === "CHEF" || user.role === "MANAGER") {
+      const loginInfo: LoginPayload = { email, password };
+      const res = await loginMutation(loginInfo);
+
+      const loggedInUser: User = {
+        id: Number(res.userId),
+        email: res.email,
+        role: res.role as UserRole,
+      };
+
+      dispatch(setCredentials({ user: loggedInUser }));
+      if (loggedInUser.role === "CHEF" || loggedInUser.role === "MANAGER") {
         navigate("/kds", { replace: true });
         return;
       }
-      navigate("/menu", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        setErrorMessage("Invalid email or password.");
-      } else {
-        setErrorMessage("Login failed. Please try again.");
-      }
-    } finally {
-      setIsSubmitting(false);
+      console.error("Login failed: ", error);
+      setErrorMessage("Invalid email or password!");
     }
   };
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    void submitLogin();
+    handleLoginSubmit();
   };
 
   return (
     <div className="bg-surface relative flex h-screen w-screen items-center justify-center overflow-hidden">
-      <div className="z-10 flex w-full max-w-md flex-col px-6">
-        <h1 className="text-primary mb-12 text-center text-5xl leading-tight font-black tracking-wide md:text-6xl">
-          WELCOME
-          <br />
-          BACK
+      <div className="z-10 flex items-center w-full flex-col px-6">
+        <h1 className="text-primary w-[60%] mb-4 text-center text-8xl leading-tight tracking-wide">
+          WELCOME BACK
         </h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <p className="text-on-surface text-center mb-6 text-sm font-mono font-medium leading-tight tracking-wide">
+          Please login with your provided
+          <br />
+          Email and Password.
+        </p>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[30%]">
           <InputBox
             id="email"
             label="Email"
             type="email"
-            placeholder="Enter your email"
-            content={email}
-            onChange={setEmail}
+            placeholder="user@example.com"
+            icon={<MailIcon />}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
-            className="px-4 py-2"
           />
 
           <InputBox
             id="password"
             label="Password"
             type="password"
-            placeholder="Enter your password"
-            content={password}
-            onChange={setPassword}
+            placeholder="Password"
+            icon={<LockIcon />}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-            className="px-4 py-2"
           />
 
-          {errorMessage ? (
-            <p className="text-danger text-sm font-semibold">{errorMessage}</p>
-          ) : null}
+          {errorMessage && (
+            <p className="text-danger font-mono font-bold text-center text-sm my-2">
+              {errorMessage}
+            </p>
+          )}
 
-          <Button
-            variant="full-primary"
-            type="submit"
-            disabled={isSubmitting}
-            className="mt-4 py-2 text-lg"
-          >
-            {isSubmitting ? "LOGGING IN..." : "LOG IN"}
+          <Button variant="full-primary" type="submit" disabled={isPending}>
+            {isPending ? "LOGGING IN..." : "LOG IN"}
           </Button>
         </form>
       </div>
     </div>
   );
 };
-
-export default LoginPage;
