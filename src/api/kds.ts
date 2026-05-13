@@ -1,5 +1,15 @@
 import { apiClient } from "./client";
 
+export async function getWsTicket() {
+  const { data, error } = await apiClient.GET("/kds/ws-ticket");
+
+  if (error) {
+    throw(error);
+  }
+
+  return data?.data || ""; 
+}
+
 export async function getKdsQueue() {
   const { data, error } = await apiClient.GET("/kds/queue", {
     params: {
@@ -25,6 +35,12 @@ export async function getKdsAlerts() {
   }
 
   return data?.data || [];
+}
+
+export async function markOrderCooking(orderId: number) {
+  await apiClient.PATCH("/kds/orders/{orderId}/mark-cooking", {
+    params: { path: { orderId } }
+  });
 }
 
 export async function startCookingItem(orderId: number, itemId: number) {

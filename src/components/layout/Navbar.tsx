@@ -5,6 +5,7 @@ import { useLogout } from "../../features";
 import { useAppDispatch } from "../../store/hooks";
 import { logout } from "../../store/slices/authSlice";
 import { clearCart } from "../../store/slices/cartSlice";
+import { queryClient } from "../../query";
 
 export interface NavbarProps {
   selectedId: string;
@@ -25,6 +26,8 @@ export const NavBar = ({ selectedId, ...props }: NavbarProps) => {
       dispatch(clearCart());
       localStorage.removeItem("irms_cart");
       dispatch(logout());
+
+      queryClient.clear();
     } catch (error) {
       console.error("Logout failed: ", error);
     }

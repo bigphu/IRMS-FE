@@ -58,9 +58,9 @@ export const MenuPage = () => {
                         <div>
                           {`${cat["label"]}`}
                         </div>
-                        <div className="scale-250">
+                        {/* <div className="scale-250">
                           {cat["icon"]}
-                        </div>
+                        </div> */}
                       </h2>
                     </div>
 
@@ -119,7 +119,7 @@ export const MenuPage = () => {
               </div>
             </Button>
 
-            <Button variant="outline-accent">
+            <Button variant="outline-accent" onClick={() => navigate("/kds")}>
               <div className="flex items-center justify-center gap-4">
                 <NotebookPenIcon />
                 <p>

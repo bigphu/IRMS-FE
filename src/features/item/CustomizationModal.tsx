@@ -14,7 +14,7 @@ import { type MenuItem } from "../../types/api";
 import { QuantityInput } from "./QuantityInput";
 import {
   HashIcon,
-  NotebookPenIcon,
+  // NotebookPenIcon,
   AlertTriangleIcon,
   CircleQuestionMark,
   NotebookTextIcon,
@@ -133,11 +133,6 @@ export const CustomizationModal = ({
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSave();
-  };
-
   return (
     <div
       ref={containerRef} 
@@ -156,7 +151,7 @@ export const CustomizationModal = ({
       >
         <div className="w-full h-full flex flex-col gap-4">
           <h2 className="flex gap-6 items-center text-7xl text-primary">
-            <NotebookPenIcon size={64} />
+            {/* <NotebookPenIcon size={64} /> */}
             {existingItem ? "Edit Your Order" : "Customize Your Order"}
           </h2>
 
@@ -165,7 +160,7 @@ export const CustomizationModal = ({
               <MenuItemCard item={menuItem} forceHover onClick={() => {}} />
             </div>
             
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1 h-full w-full items-center justify-center">
+            <div className="flex flex-col gap-1 h-full w-full items-center justify-center">
               <p className="font-mono text-md line-clamp-2 w-full text-center my-2">
                 {menuItem.description}
               </p>
@@ -194,6 +189,7 @@ export const CustomizationModal = ({
                   icon={<CircleQuestionMark />}
                   label="Customizations"
                   value={customization}
+                  variant="secondary"
                   onChange={(e) => setCustomization(e.target.value)}
                   multiline
                   rows={6}
@@ -224,7 +220,7 @@ export const CustomizationModal = ({
                 {/* <Button type="submit" variant="full-primary">
                   {existingItem ? "Update Cart" : "Add to Cart"}
                 </Button> */}
-                <Button variant="full-primary" type="submit">
+                <Button variant="full-primary" onClick={handleSave}>
                   <div className="flex items-center justify-center gap-4">
                     <ShoppingCartIcon />
                     <p>
@@ -242,7 +238,7 @@ export const CustomizationModal = ({
                   </div>
                 </Button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>

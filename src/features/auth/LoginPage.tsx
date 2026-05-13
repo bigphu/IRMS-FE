@@ -6,6 +6,8 @@ import { MailIcon, LockIcon } from "lucide-react";
 import { useAppDispatch } from "../../store/hooks";
 import { setCredentials } from "../../store/slices/authSlice";
 
+import { queryClient } from "../../query";
+
 import { useLogin } from "./useLogin";
 
 import type { User, LoginPayload, UserRole } from "../../types/api";
@@ -31,11 +33,13 @@ export const LoginPage = () => {
       const loggedInUser: User = {
         id: Number(res.userId),
         email: res.email,
-        role: res.role as UserRole,
+        role: res.role!.replace("ROLE_", "") as UserRole,
       };
 
+      queryClient.invalidateQueries({ queryKey: ["menu"] })
+
       dispatch(setCredentials({ user: loggedInUser }));
-      if (loggedInUser.role === "CHEF" || loggedInUser.role === "MANAGER") {
+      if (loggedInUser.role === "CHEF") {
         navigate("/kds", { replace: true });
         return;
       }
@@ -52,9 +56,9 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="bg-surface relative flex h-screen w-screen items-center justify-center overflow-hidden">
-      <div className="z-10 flex items-center w-full flex-col px-6">
-        <h1 className="text-primary w-[60%] mb-4 text-center text-8xl leading-tight tracking-wide">
+    <div className="bg-surface relative flex flex-col h-screen w-screen items-center justify-center overflow-hidden">
+      {/* <div className="z-10 flex items-center w-full flex-col px-6"> */}
+        <h1 className="text-primary w-fit mb-4 text-center text-8xl leading-tight tracking-wide">
           WELCOME BACK
         </h1>
 
@@ -64,7 +68,7 @@ export const LoginPage = () => {
           Email and Password.
         </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[30%]">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-fit">
           <InputBox
             id="email"
             label="Email"
@@ -97,7 +101,7 @@ export const LoginPage = () => {
             {isPending ? "LOGGING IN..." : "LOG IN"}
           </Button>
         </form>
-      </div>
+      {/* </div> */}
     </div>
   );
 };

@@ -43,21 +43,19 @@ export const MenuItemCard = ({
     hoverTimer.current = setTimeout(() => {
       gsap.to(cardRef.current, {
         y: -10,
-        z: 40,
-        rotationX: -10,
-        rotationY: 5,
+        z: 60,
+        rotationY: 10,
         duration: 0.3,
-        transformOrigin: "bottom center",
         overwrite: true,
         ease: "power2.out",
       });
 
       gsap.to(imgRef.current, {
         y: -60,
-        z: 80,
+        scale: 1.7,
         duration: 0.3,
         overwrite: true,
-        ease: "power2.out",
+        ease: "back.out(1.5)",
       });
 
       gsap.to(overlayRef.current, {
@@ -78,7 +76,7 @@ export const MenuItemCard = ({
     gsap.to(cardRef.current, {
       y: 0,
       z: 0,
-      rotationX: 0,
+      // rotationX: 0,
       rotationY: 0,
       duration: 0.3,
       overwrite: true,
@@ -87,10 +85,10 @@ export const MenuItemCard = ({
 
     gsap.to(imgRef.current, {
       y: 0,
-      z: 0,
+      scale: 1.6,
       duration: 0.3,
       overwrite: true,
-      ease: "power2.out",
+      ease: "back.in(1.5)",
     });
 
     gsap.to(overlayRef.current, {

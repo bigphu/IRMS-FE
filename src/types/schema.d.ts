@@ -4,975 +4,1150 @@
  */
 
 export interface paths {
-  "/orders/update/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/orders/update/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update pending order
+         * @description Updates table, staff, or items for an order only when the order is still pending
+         */
+        post: operations["updateOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Update pending order
-     * @description Updates table, staff, or items for an order only when the order is still pending
-     */
-    post: operations["updateOrder"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/orders/create": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/orders/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create order
+         * @description Creates a new order with initial items and sets status to pending
+         */
+        post: operations["createOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Create order
-     * @description Creates a new order with initial items and sets status to pending
-     */
-    post: operations["createOrder"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/orders/cancel/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/orders/cancel/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel pending order
+         * @description Cancels an order if and only if its current status is pending
+         */
+        post: operations["cancelOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Cancel pending order
-     * @description Cancels an order if and only if its current status is pending
-     */
-    post: operations["cancelOrder"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/menu/delete-item/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/menu/delete-item/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete menu item
+         * @description Deletes an existing menu item by ID
+         */
+        post: operations["deleteMenuItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Delete menu item
-     * @description Deletes an existing menu item by ID
-     */
-    post: operations["deleteMenuItem"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/menu/add-item": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/menu/add-item": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add menu item
+         * @description Creates a new menu item
+         */
+        post: operations["addMenuItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Add menu item
-     * @description Creates a new menu item
-     */
-    post: operations["addMenuItem"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/auth/logout": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post: operations["logout"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/auth/login": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post: operations["login"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/menu/update-item/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/orders/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Complete order
+         * @description Marks a READY order as COMPLETED when customers are done eating
+         */
+        patch: operations["completeOrder"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /**
-     * Update menu item
-     * @description Updates editable fields of an existing menu item
-     */
-    patch: operations["updateMenuItem"];
-    trace?: never;
-  };
-  "/kds/orders/{orderId}/items/{itemId}/start": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/menu/update-item/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update menu item
+         * @description Updates editable fields of an existing menu item
+         */
+        patch: operations["updateMenuItem"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /**
-     * Start an order item
-     * @description Marks a dish as cooking. Required stations are read from MenuItemEntity for display only
-     */
-    patch: operations["startItem"];
-    trace?: never;
-  };
-  "/kds/orders/{orderId}/items/{itemId}/ready": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/kds/orders/{orderId}/mark-cooking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mark order cooking
+         * @description Marks the whole order as cooking when at least one item is cooking. For display only, does not affect item-level status
+         */
+        patch: operations["markOrderCooking"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /**
-     * Mark item ready
-     * @description Marks one dish as ready to serve
-     */
-    patch: operations["markItemReady"];
-    trace?: never;
-  };
-  "/kds/orders/{orderId}/items/{itemId}/complete": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/kds/orders/{orderId}/items/{itemId}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Start an order item
+         * @description Marks a dish as cooking. Required stations are read from MenuItemEntity for display only
+         */
+        patch: operations["startItem"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /**
-     * Complete an order item
-     * @description Marks one dish as done. When all dishes are done, the order is marked completed
-     */
-    patch: operations["completeItem"];
-    trace?: never;
-  };
-  "/kds/orders/{orderId}/items/{itemId}/cancel": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/kds/orders/{orderId}/items/{itemId}/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mark item ready
+         * @description Marks one dish as ready to serve
+         */
+        patch: operations["markItemReady"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /**
-     * Cancel an order item
-     * @description Marks one dish as canceled
-     */
-    patch: operations["cancelItem"];
-    trace?: never;
-  };
-  "/orders/get/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/kds/orders/{orderId}/items/{itemId}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Complete an order item
+         * @description Marks one dish as done. When all dishes are done, the order is marked completed
+         */
+        patch: operations["completeItem"];
+        trace?: never;
     };
-    /**
-     * Get order by ID
-     * @description Returns full order details for the provided order ID
-     */
-    get: operations["getOrderById"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/menu/items-by-category/{category}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/kds/orders/{orderId}/items/{itemId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Cancel an order item
+         * @description Marks one dish as canceled
+         */
+        patch: operations["cancelItem"];
+        trace?: never;
     };
-    /**
-     * Get menu items by category
-     * @description Returns menu items for a category, with optional availability filtering
-     */
-    get: operations["getMenuItemsByCategory"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/menu/item/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/orders/get/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get order by ID
+         * @description Returns full order details for the provided order ID
+         */
+        get: operations["getOrderById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get menu item by ID
-     * @description Returns one menu item by its ID
-     */
-    get: operations["getMenuItemById"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/menu/all": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/orders/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all orders
+         * @description Returns all orders with their items and status for dashboard tracking
+         */
+        get: operations["getAllOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get all menu items
-     * @description Returns all menu items, with optional filtering by availability
-     */
-    get: operations["getAllMenuItems"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/kds/queue": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/menu/items-by-category/{category}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get menu items by category
+         * @description Returns menu items for a category, with optional availability filtering
+         */
+        get: operations["getMenuItemsByCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get KDS order queue
-     * @description Returns active orders in the kitchen queue with all details including items
-     */
-    get: operations["getQueue"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/kds/alerts": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/menu/item/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get menu item by ID
+         * @description Returns one menu item by its ID
+         */
+        get: operations["getMenuItemById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get KDS deadline alerts
-     * @description Returns order-level alerts for orders that are approaching their computed deadline
-     */
-    get: operations["getAlerts"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/menu/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all menu items
+         * @description Returns all menu items, with optional filtering by availability
+         */
+        get: operations["getAllMenuItems"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/kds/ws-ticket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get WebSocket Ticket
+         * @description Generates a one-time use ticket for STOMP auth
+         */
+        get: operations["getWsTicket"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/kds/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get KDS order queue
+         * @description Returns active orders in the kitchen queue with all details including items
+         */
+        get: operations["getQueue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/kds/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get KDS deadline alerts
+         * @description Returns order-level alerts for orders that are approaching their computed deadline
+         */
+        get: operations["getAlerts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    UpdateOrderItemRequest: {
-      /** Format: int64 */
-      itemId?: number;
-      /** Format: int64 */
-      menuItemId?: number;
-      /** Format: int32 */
-      quantity?: number;
-      specialInstructions?: string;
-      allergyNotes?: string;
-      customization?: string;
-      canceled?: boolean;
+    schemas: {
+        UpdateOrderItemRequest: {
+            /** Format: int64 */
+            itemId?: number;
+            /** Format: int64 */
+            menuItemId?: number;
+            /** Format: int32 */
+            quantity?: number;
+            specialInstructions?: string;
+            allergyNotes?: string;
+            customization?: string;
+            canceled?: boolean;
+        };
+        UpdateOrderRequest: {
+            /** Format: int64 */
+            staffId?: number;
+            /** Format: int64 */
+            tableId?: number;
+            items?: components["schemas"]["UpdateOrderItemRequest"][];
+        };
+        ApiResponseOrderEntity: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: components["schemas"]["OrderEntity"];
+        };
+        MenuItemEntity: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            stations?: ("GRILL" | "FRYER" | "DESSERT" | "BEVERAGE" | "SALAD" | "GENERAL")[];
+            /** @enum {string} */
+            dishCategory?: "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
+            /** Format: int32 */
+            estimatedPrepMinutes?: number;
+            /** Format: double */
+            price?: number;
+            description?: string;
+            available?: boolean;
+        };
+        OrderEntity: {
+            /** Format: int64 */
+            id?: number;
+            staff?: components["schemas"]["UserEntity"];
+            /** Format: int64 */
+            tableId?: number;
+            /** Format: date-time */
+            orderTime?: string;
+            /** Format: date-time */
+            completedAt?: string;
+            /** Format: int32 */
+            actualPrepMinutes?: number;
+            nearDeadlineNotified?: boolean;
+            overdueNotified?: boolean;
+            items?: components["schemas"]["OrderItemEntity"][];
+            /** @enum {string} */
+            status?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
+        };
+        OrderItemEntity: {
+            /** Format: int64 */
+            id?: number;
+            menuItem?: components["schemas"]["MenuItemEntity"];
+            /** Format: int32 */
+            quantity?: number;
+            specialInstructions?: string;
+            allergyNotes?: string;
+            customization?: string;
+            /** @enum {string} */
+            progressStatus?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
+            /** Format: date-time */
+            completedAt?: string;
+            /** Format: int32 */
+            currentStationIndex?: number;
+            /** Format: int32 */
+            actualPrepMinutes?: number;
+            /** @enum {string} */
+            previousProgressStatus?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
+        };
+        UserEntity: {
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            email?: string;
+            hashedPassword?: string;
+            /** @enum {string} */
+            role?: "MANAGER" | "CHEF" | "SERVER" | "CASHIER";
+        };
+        CreateOrderItemRequest: {
+            /** Format: int64 */
+            menuItemId: number;
+            /** Format: int32 */
+            quantity?: number;
+            specialInstructions?: string;
+            allergyNotes?: string;
+            customization?: string;
+        };
+        CreateOrderRequest: {
+            /** Format: int64 */
+            tableId?: number;
+            items: components["schemas"]["CreateOrderItemRequest"][];
+        };
+        ApiResponseVoid: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: unknown;
+        };
+        MenuItemRequest: {
+            available?: boolean;
+            /** Format: double */
+            price?: number;
+            description?: string;
+            /** @enum {string} */
+            dishCategory?: "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
+            name?: string;
+            /** Format: int32 */
+            estimatedPrepMinutes?: number;
+            stationTypes?: ("GRILL" | "FRYER" | "DESSERT" | "BEVERAGE" | "SALAD" | "GENERAL")[];
+            isAvailable?: boolean;
+        };
+        ApiResponseMenuItemEntity: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: components["schemas"]["MenuItemEntity"];
+        };
+        LoginRequestDTO: {
+            /** Format: email */
+            email: string;
+            password: string;
+        };
+        AuthTokenDTO: {
+            accessToken?: string;
+            tokenType?: string;
+            userId?: string;
+            email?: string;
+            role?: string;
+        };
+        ApiResponseListOrderResponseDto: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: components["schemas"]["OrderResponseDto"][];
+        };
+        OrderItemResponseDto: {
+            /** Format: int64 */
+            orderItemId?: number;
+            /** Format: int64 */
+            menuItemId?: number;
+            name?: string;
+            /** Format: int32 */
+            quantity?: number;
+            allergyNotes?: string;
+            specialInstructions?: string;
+            customizations?: string;
+            /** Format: double */
+            totalPrice?: number;
+            status?: string;
+            menuItem?: components["schemas"]["MenuItemEntity"];
+        };
+        OrderResponseDto: {
+            /** Format: int64 */
+            orderId?: number;
+            /** Format: int64 */
+            tableNumber?: number;
+            items?: components["schemas"]["OrderItemResponseDto"][];
+            /** Format: double */
+            totalPrice?: number;
+            /** @enum {string} */
+            status?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        ApiResponseListMenuItemEntity: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: components["schemas"]["MenuItemEntity"][];
+        };
+        ApiResponseString: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: string;
+        };
+        ApiResponseListKdsAlertDto: {
+            /** Format: int32 */
+            status?: number;
+            message?: string;
+            data?: components["schemas"]["KdsAlertDto"][];
+        };
+        KdsAlertDto: {
+            type?: string;
+            message?: string;
+            /** Format: int64 */
+            orderId?: number;
+            /** Format: int64 */
+            orderItemId?: number;
+            /** Format: date-time */
+            createdAt?: string;
+        };
     };
-    UpdateOrderRequest: {
-      /** Format: int64 */
-      staffId?: number;
-      /** Format: int64 */
-      tableId?: number;
-      items?: components["schemas"]["UpdateOrderItemRequest"][];
-    };
-    ApiResponseOrderEntity: {
-      /** Format: int32 */
-      status?: number;
-      message?: string;
-      data?: components["schemas"]["OrderEntity"];
-    };
-    MenuItemEntity: {
-      /** Format: int64 */
-      id?: number;
-      name?: string;
-      stations?: ("GRILL" | "FRYER" | "DESSERT" | "BEVERAGE" | "SALAD" | "GENERAL")[];
-      /** @enum {string} */
-      dishCategory?: "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
-      /** Format: int32 */
-      estimatedPrepMinutes?: number;
-      /** Format: double */
-      price?: number;
-      description?: string;
-      available?: boolean;
-    };
-    OrderEntity: {
-      /** Format: int64 */
-      id?: number;
-      staff?: components["schemas"]["UserEntity"];
-      /** Format: int64 */
-      tableId?: number;
-      /** Format: date-time */
-      orderTime?: string;
-      /** Format: date-time */
-      completedAt?: string;
-      /** Format: int32 */
-      actualPrepMinutes?: number;
-      nearDeadlineNotified?: boolean;
-      items?: components["schemas"]["OrderItemEntity"][];
-      /** @enum {string} */
-      status?: "UNPAID" | "PENDING" | "IN_PROGRESS" | "COMPLETED" | "OVERDUED" | "CANCELED";
-    };
-    OrderItemEntity: {
-      /** Format: int64 */
-      id?: number;
-      menuItem?: components["schemas"]["MenuItemEntity"];
-      /** Format: int32 */
-      quantity?: number;
-      specialInstructions?: string;
-      allergyNotes?: string;
-      customization?: string;
-      /** @enum {string} */
-      progressStatus?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
-      /** Format: date-time */
-      completedAt?: string;
-      /** Format: int32 */
-      currentStationIndex?: number;
-      /** Format: int32 */
-      actualPrepMinutes?: number;
-      /** @enum {string} */
-      previousProgressStatus?: "PENDING" | "COOKING" | "READY" | "COMPLETED" | "CANCELED";
-    };
-    UserEntity: {
-      /** Format: int64 */
-      id?: number;
-      name?: string;
-      email?: string;
-      hashedPassword?: string;
-      /** @enum {string} */
-      role?: "MANAGER" | "CHEF" | "SERVER" | "CASHIER";
-    };
-    CreateOrderItemRequest: {
-      /** Format: int64 */
-      menuItemId: number;
-      /** Format: int32 */
-      quantity?: number;
-      specialInstructions?: string;
-      allergyNotes?: string;
-      customization?: string;
-    };
-    CreateOrderRequest: {
-      /** Format: int64 */
-      tableId?: number;
-      items: components["schemas"]["CreateOrderItemRequest"][];
-    };
-    ApiResponseVoid: {
-      /** Format: int32 */
-      status?: number;
-      message?: string;
-      data?: unknown;
-    };
-    MenuItemRequest: {
-      available?: boolean;
-      /** Format: double */
-      price?: number;
-      description?: string;
-      /** @enum {string} */
-      dishCategory?: "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
-      name?: string;
-      /** Format: int32 */
-      estimatedPrepMinutes?: number;
-      stationTypes?: ("GRILL" | "FRYER" | "DESSERT" | "BEVERAGE" | "SALAD" | "GENERAL")[];
-      isAvailable?: boolean;
-    };
-    ApiResponseMenuItemEntity: {
-      /** Format: int32 */
-      status?: number;
-      message?: string;
-      data?: components["schemas"]["MenuItemEntity"];
-    };
-    LoginRequestDTO: {
-      /** Format: email */
-      email: string;
-      password: string;
-    };
-    AuthTokenDTO: {
-      accessToken?: string;
-      tokenType?: string;
-      userId?: string;
-      email?: string;
-      role?: string;
-    };
-    ApiResponseListMenuItemEntity: {
-      /** Format: int32 */
-      status?: number;
-      message?: string;
-      data?: components["schemas"]["MenuItemEntity"][];
-    };
-    ApiResponseListOrderResponseDto: {
-      /** Format: int32 */
-      status?: number;
-      message?: string;
-      data?: components["schemas"]["OrderResponseDto"][];
-    };
-    OrderItemResponseDto: {
-      /** Format: int64 */
-      orderItemId?: number;
-      /** Format: int64 */
-      menuItemId?: number;
-      name?: string;
-      /** Format: int32 */
-      quantity?: number;
-      specialInstructions?: string;
-      /** Format: double */
-      totalPrice?: number;
-      status?: string;
-      menuItem?: components["schemas"]["MenuItemEntity"];
-    };
-    OrderResponseDto: {
-      /** Format: int64 */
-      orderId?: number;
-      /** Format: int64 */
-      tableNumber?: number;
-      items?: components["schemas"]["OrderItemResponseDto"][];
-      /** Format: double */
-      totalPrice?: number;
-      /** @enum {string} */
-      status?: "UNPAID" | "PENDING" | "IN_PROGRESS" | "COMPLETED" | "OVERDUED" | "CANCELED";
-      /** Format: date-time */
-      createdAt?: string;
-      /** Format: date-time */
-      updatedAt?: string;
-    };
-    ApiResponseListKdsAlertDto: {
-      /** Format: int32 */
-      status?: number;
-      message?: string;
-      data?: components["schemas"]["KdsAlertDto"][];
-    };
-    KdsAlertDto: {
-      type?: string;
-      message?: string;
-      /** Format: int64 */
-      orderId?: number;
-      /** Format: int64 */
-      orderItemId?: number;
-      /** Format: date-time */
-      createdAt?: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  updateOrder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UpdateOrderRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    updateOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrderRequest"];
+            };
         };
-      };
-    };
-  };
-  createOrder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CreateOrderRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
+    };
+    createOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  cancelOrder: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderRequest"];
+            };
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  deleteMenuItem: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    cancelOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseVoid"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  addMenuItem: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MenuItemRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    deleteMenuItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseMenuItemEntity"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
         };
-      };
     };
-  };
-  logout: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    addMenuItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content?: never;
-      };
-    };
-  };
-  login: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoginRequestDTO"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MenuItemRequest"];
+            };
         };
-        content: {
-          "*/*": components["schemas"]["AuthTokenDTO"];
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMenuItemEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  updateMenuItem: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["MenuItemRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseMenuItemEntity"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  startItem: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        orderId: number;
-        itemId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequestDTO"];
+            };
         };
-      };
-    };
-  };
-  markItemReady: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        orderId: number;
-        itemId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AuthTokenDTO"];
+                };
+            };
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
-        };
-      };
     };
-  };
-  completeItem: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        orderId: number;
-        itemId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    completeOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  cancelItem: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        orderId: number;
-        itemId: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    updateMenuItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MenuItemRequest"];
+            };
         };
-      };
-    };
-  };
-  getOrderById: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMenuItemEntity"];
+                };
+            };
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseOrderEntity"];
-        };
-      };
     };
-  };
-  getMenuItemsByCategory: {
-    parameters: {
-      query?: {
-        availableOnly?: boolean;
-      };
-      header?: never;
-      path: {
-        category: "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    markOrderCooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseListMenuItemEntity"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  getMenuItemById: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    startItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+                itemId: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseMenuItemEntity"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  getAllMenuItems: {
-    parameters: {
-      query?: {
-        availableOnly?: boolean;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    markItemReady: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+                itemId: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseListMenuItemEntity"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  getQueue: {
-    parameters: {
-      query?: {
-        sortBy?: "ESTIMATED_PREP_TIME" | "ORDER_TIME";
-        direction?: "ASC" | "DESC";
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    completeItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+                itemId: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseListOrderResponseDto"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
-  getAlerts: {
-    parameters: {
-      query?: {
-        thresholdMinutes?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    cancelItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orderId: number;
+                itemId: number;
+            };
+            cookie?: never;
         };
-        content: {
-          "*/*": components["schemas"]["ApiResponseListKdsAlertDto"];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
         };
-      };
     };
-  };
+    getOrderById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseOrderEntity"];
+                };
+            };
+        };
+    };
+    getAllOrders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListOrderResponseDto"];
+                };
+            };
+        };
+    };
+    getMenuItemsByCategory: {
+        parameters: {
+            query?: {
+                availableOnly?: boolean;
+            };
+            header?: never;
+            path: {
+                category: "APPETIZER" | "MAIN_COURSE" | "DESSERT" | "BEVERAGE";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListMenuItemEntity"];
+                };
+            };
+        };
+    };
+    getMenuItemById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseMenuItemEntity"];
+                };
+            };
+        };
+    };
+    getAllMenuItems: {
+        parameters: {
+            query?: {
+                availableOnly?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListMenuItemEntity"];
+                };
+            };
+        };
+    };
+    getWsTicket: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: {
+                access_token?: string;
+            };
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseString"];
+                };
+            };
+        };
+    };
+    getQueue: {
+        parameters: {
+            query?: {
+                sortBy?: "ESTIMATED_PREP_TIME" | "ORDER_TIME";
+                direction?: "ASC" | "DESC";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListOrderResponseDto"];
+                };
+            };
+        };
+    };
+    getAlerts: {
+        parameters: {
+            query?: {
+                thresholdMinutes?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListKdsAlertDto"];
+                };
+            };
+        };
+    };
 }

@@ -91,7 +91,7 @@ export const CartItemCard = ({
   // 5. Wrap the deletion animation safely
   const triggerDelete = () => contextSafe(animateOut)();
 
-  const borderStyling = "border-secondary border-2 hover:ring-primary hover:ring-2 hover:ring-offset-3 shadow-lg";
+  const borderStyling = "border-secondary border-2 shadow-md hover:shadow-lg hover:shadow-primary/50 transition-shadow";
 
   return (
     <div
@@ -107,7 +107,7 @@ export const CartItemCard = ({
         className={`flex w-full h-fit ${borderStyling} justify-between items-stretch rounded-bl-4xl gap-6 rounded-tr-4xl bg-surface p-4`}
       >
         
-        <div className="relative w-[30%] shrink-0 overflow-hidden rounded-bl-xl rounded-tr-xl bg-secondary">
+        <div className="relative w-[30%] shrink-0 overflow-hidden rounded-bl-3xl rounded-tr-3xl bg-secondary">
           <img
             ref={imgRef}
             src={DishImg}

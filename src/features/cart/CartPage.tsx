@@ -95,16 +95,17 @@ export const CartPage = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen px-15 py-10 gap-4">
-      <div className="flex justify-between pr-13 w-full">
-        <h2 className="flex gap-6 items-center text-7xl text-primary">
-          <ShoppingCartIcon size={64} />
-          Manage Your Cart
-        </h2>
-      </div>
 
       <div className="flex-1 min-h-0">
         <ScrollArea direction="vertical" className="h-full">
-          <div className="flex flex-col gap-4 px-6 py-6 flex-1">
+          <div className="flex justify-between pr-13 w-full">
+            <h2 className="flex gap-6 items-center text-7xl text-primary">
+              {/* <ShoppingCartIcon size={64} /> */}
+              Manage Your Cart
+            </h2>
+          </div>
+
+          <div className="flex flex-col gap-4 p-6 flex-1">
             {/* 4. The main render block is now super clean */}
             {renderContent()}
           </div>
