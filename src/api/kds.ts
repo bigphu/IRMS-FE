@@ -10,12 +10,13 @@ export async function getWsTicket() {
   return data?.data || ""; 
 }
 
-export async function getKdsQueue() {
+export async function getKdsQueue(isHistory: boolean = false) {
   const { data, error } = await apiClient.GET("/kds/queue", {
     params: {
       query: {
         sortBy: "ORDER_TIME",
-        direction: "ASC"
+        direction: "ASC",
+        history: isHistory,
       }
     }
   });

@@ -1,17 +1,15 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import type { KdsQueueOrder, KdsAlert } from "../../types/api";
-import { useAppSelector } from "../../store/hooks";
-import { ScrollArea, Button, DisplayBox } from "../../components"; // Import DisplayBox!
-import { DoorOpenIcon, Loader2Icon, PowerCircleIcon, XCircleIcon, ChefHatIcon } from "lucide-react"; // Import extra icons
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { ScrollArea, Button, DisplayBox } from "../../components"; 
+import { DoorOpenIcon, Loader2Icon, PowerCircleIcon, XCircleIcon, ChefHatIcon } from "lucide-react"; 
 import { KdsCard } from "./KdsCard";
 
 import { useLogout } from "../../features";
-import { useAppDispatch } from "../../store/hooks";
 import { logout } from "../../store/slices/authSlice";
 import { queryClient } from "../../query";
 
-// Import your custom hooks for fetching and mutating KDS data
 import { useKdsQueue, useKdsAlerts, useKdsMutations } from "./useKds";
 
 export const KdsPage = () => {
@@ -34,9 +32,8 @@ export const KdsPage = () => {
   };
 
   const isChef = useAppSelector((state) => state.auth.role) === "CHEF";
-
-  // Destructure isError to handle failed fetches
-  const { data: queueData = [], isLoading, isError } = useKdsQueue();
+  
+  const { data: queueData = [], isLoading, isError } = useKdsQueue(isChef);
   const { data: alerts = [] } = useKdsAlerts();
   const { startMutation, readyMutation, completeMutation } = useKdsMutations();
 
@@ -55,7 +52,7 @@ export const KdsPage = () => {
     return cols;
   }, [queueData]);
 
-  // 1. Extracted rendering logic helper (Identical to CartPage pattern)
+  // Extracted rendering logic helper 
   const renderStatusBox = (variant: string, icon: React.ReactNode, value: string) => (
     <div className="flex flex-col justify-center items-center rounded-2xl w-full flex-1 h-full bg-neutral min-h-[50vh]">
       <div className="w-fit h-fit">
@@ -64,13 +61,12 @@ export const KdsPage = () => {
     </div>
   );
 
-  // 2. The dynamic content renderer
+  // The dynamic content renderer
   const renderContent = () => {
-    if (isLoading) return renderStatusBox("loading-secondary", <Loader2Icon />, "Loading Kitchen Queue...");
+    if (isLoading) return renderStatusBox("loading-secondary", <Loader2Icon className="animate-spin" />, "Loading Kitchen Queue...");
     if (isError) return renderStatusBox("danger", <XCircleIcon />, "Failed to load orders!");
     if (queueData.length === 0) return renderStatusBox("secondary", <ChefHatIcon />, "The kitchen queue is empty!");
 
-    // 3. Render the columns if we have data
     return (
       <div className="flex w-full h-full gap-4 items-start">
         {columns.map((columnData, columnIndex) => (
@@ -114,7 +110,6 @@ export const KdsPage = () => {
           </h2>
         </div>
 
-        {/* 4. Implement renderContent inside the flex container */}
         <div className="flex flex-col gap-4 p-6 flex-1 min-h-0">
           {renderContent()}
         </div>

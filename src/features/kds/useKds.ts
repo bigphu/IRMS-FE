@@ -6,22 +6,22 @@ import {
   markItemReady, 
   completeItem 
 } from "../../api/kds";
+import { queryClient } from "../../query";
 
 // --- QUERIES ---
 
-export const useKdsQueue = () => {
+export const useKdsQueue = (isChef: boolean) => {
   return useQuery({
-    queryKey: ["kdsQueue"],
-    queryFn: getKdsQueue,
-    // Optional: Refetch full queue silently in background when user returns to app
-    refetchOnWindowFocus: true, 
+    queryKey: ["kdsQueue", isChef], 
+    queryFn: () => getKdsQueue(!isChef),
+    refetchOnWindowFocus: true,
   });
 };
 
 export const useKdsAlerts = () => {
   return useQuery({
     queryKey: ["kdsAlerts"],
-    queryFn: getKdsAlerts,
+    queryFn: () => getKdsAlerts(),
     refetchOnWindowFocus: true, 
   });
 };
@@ -29,21 +29,27 @@ export const useKdsAlerts = () => {
 // --- MUTATIONS ---
 
 export const useKdsMutations = () => {
-  // const queryClient = useQueryClient();
+  const refreshQueue = () => {
+    queryClient.invalidateQueries({ queryKey: ["kdsQueue"] });
+    queryClient.invalidateQueries({ queryKey: ["kdsAlerts"] });
+  };
 
   const startMutation = useMutation({
     mutationFn: ({ orderId, itemId }: { orderId: number; itemId: number }) => 
       startCookingItem(orderId, itemId),
+      onSuccess: () => refreshQueue(), // Refetch queue to get updated statuses
   });
 
   const readyMutation = useMutation({
     mutationFn: ({ orderId, itemId }: { orderId: number; itemId: number }) => 
       markItemReady(orderId, itemId),
+      onSuccess: () => refreshQueue(), // Refetch queue to get updated statuses 
   });
 
   const completeMutation = useMutation({
     mutationFn: ({ orderId, itemId }: { orderId: number; itemId: number }) => 
       completeItem(orderId, itemId),
+      onSuccess: () => refreshQueue(), // Refetch queue to get updated statuses
   });
 
   return { startMutation, readyMutation, completeMutation };

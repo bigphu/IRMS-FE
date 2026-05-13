@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
@@ -13,7 +13,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { queryClient, localStoragePersister } from "./query";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
         <PersistQueryClientProvider
@@ -26,5 +26,5 @@ createRoot(document.getElementById("root")!).render(
         </PersistQueryClientProvider>
       </Provider>
     </BrowserRouter>
-  </StrictMode>,
+  // </StrictMode>,
 );

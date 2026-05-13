@@ -15,7 +15,7 @@ interface KdsCardItemProps {
   orderId: number;
   item: KdsQueueOrderItem;
   isChef: boolean;
-  isUrgent?: boolean; // New prop!
+  isUrgent?: boolean;
   onStart: (orderId: number, itemId: number) => void;
   onReady: (orderId: number, itemId: number) => void;
   onComplete: (orderId: number, itemId: number) => void;
@@ -42,11 +42,16 @@ export const KdsCardItem = ({
     }
   };
 
-  if (item.status === "COMPLETED" || item.status === "CANCELED") return null;
+  // Hard block finished items from the Chef's view
+  if (isChef && (item.status === "COMPLETED" || item.status === "CANCELED")) return null;
+
+  const isFinished = item.status === "COMPLETED" || item.status === "CANCELED";
 
   return (
-    // Add a glowing danger background if this specific item is urgent!
-    <div className={`flex w-full flex-col gap-2 border-b-2 border-secondary/10 pb-4 last:border-0 last:pb-0 ${isUrgent ? 'bg-danger/5 rounded-xl p-2 border-danger/30' : ''}`}>
+    <div className={`flex w-full flex-col gap-2 border-b-2 border-secondary/10 pb-4 last:border-0 last:pb-0 
+      ${isUrgent ? 'bg-danger/5 rounded-xl p-2 border-danger/30' : ''}
+      ${isFinished ? 'opacity-50 grayscale' : ''}
+    `}>
       
       {/* Item Header */}
       <div className="flex flex-col gap-1">
@@ -58,23 +63,17 @@ export const KdsCardItem = ({
         </h3>
         
         <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider">
-          
-          {/* Display Estimated Prep Time */}
           {item.menuItem?.estimatedPrepMinutes && (
             <div className={`flex items-center gap-1 mt-0.5 ${isUrgent ? 'text-danger animate-pulse' : 'text-secondary/70'}`}>
                <ClockIcon size={14} />
-               {/* Multiply by quantity so the chef sees total time! */}
                <span>{item.menuItem.estimatedPrepMinutes * (item.quantity || 1)}m</span>
             </div>
           )}
 
-          {/* Stations */}
           {item.menuItem?.stations && item.menuItem.stations.length > 0 && (
             <div className="flex items-center gap-1 text-secondary">
-              <span className="opacity-50">-</span>
-              <span>
-                <ChefHatIcon size={16} className="ml-1" />
-              </span>
+              <span className="opacity-50">•</span>
+              <ChefHatIcon size={14} className="ml-1" />
               <span>{item.menuItem.stations.join(", ")}</span>
             </div>
           )}
@@ -111,23 +110,23 @@ export const KdsCardItem = ({
           {item.status}
         </span>
 
-        {isChef && item.orderItemId && (
+        {item.orderItemId && (
           <div className="shrink-0">
-            {item.status === "PENDING" && (
+            {isChef && item.status === "PENDING" && (
               <Button variant="outline-primary" onClick={() => onStart(orderId, item.orderItemId!)}>
                 <div className="flex items-center gap-1.5 text-xs px-1 uppercase">
                   <PlayIcon size={14} /> Start
                 </div>
               </Button>
             )}
-            {item.status === "COOKING" && (
+            {isChef && item.status === "COOKING" && (
               <Button variant="full-primary" onClick={() => onReady(orderId, item.orderItemId!)}>
                 <div className="flex items-center gap-1.5 text-xs px-1 uppercase">
                   <UtensilsCrossedIcon size={14} /> Ready
                 </div>
               </Button>
             )}
-            {item.status === "READY" && (
+            {!isChef && item.status === "READY" && (
               <Button variant="full-accent" onClick={() => onComplete(orderId, item.orderItemId!)}>
                 <div className="flex items-center gap-1.5 text-xs px-1 uppercase">
                   <CheckCircle2Icon size={14} /> Finish

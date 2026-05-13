@@ -1,12 +1,12 @@
 import { ClockIcon } from "lucide-react";
 import type { KdsQueueOrder, KdsAlert } from "../../types/api";
-import { formatTime } from "../../utils"
+import { formatTime } from "../../utils";
 import { KdsCardItem } from "./KdsCardItem";
 
 interface KdsCardProps {
   order: KdsQueueOrder;
   isChef: boolean;
-  alerts?: KdsAlert[]; // Accept the alerts array
+  alerts?: KdsAlert[]; 
   onStart: (orderId: number, itemId: number) => void;
   onReady: (orderId: number, itemId: number) => void;
   onComplete: (orderId: number, itemId: number) => void;
@@ -15,24 +15,37 @@ interface KdsCardProps {
 export const KdsCard = ({ 
   order, 
   isChef, 
-  alerts = [], // Default to empty array
+  alerts = [], 
   onStart, 
   onReady, 
   onComplete 
 }: KdsCardProps) => {
-  const activeItems = order.items?.filter(item => 
-    item.status !== "COMPLETED" && item.status !== "CANCELED"
-  );
+  
+  // Chefs only see active items. Servers see everything (history included)
+  const activeItems = [...(order.items || [])]
+    .filter(item => isChef ? (item.status !== "COMPLETED" && item.status !== "CANCELED") : true)
+    .sort((a, b) => (a.orderItemId || 0) - (b.orderItemId || 0));
 
   if (!activeItems || activeItems.length === 0) return null;
 
-  // Determine if the whole order card should have a red header if ANY item is late
-  const hasLateItems = alerts.length > 0;
+  // Filter out stale alerts for items that are already cooked/ready
+  const activeAlerts = alerts.filter(alert => {
+    const matchedItem = order.items?.find(i => i.orderItemId === alert.orderItemId);
+    return matchedItem && (matchedItem.status === "PENDING" || matchedItem.status === "COOKING");
+  });
+
+  const isOrderFinished = order.status === "COMPLETED" || order.status === "CANCELED";
+  
+  // Use activeAlerts instead of raw alerts
+  const hasLateItems = !isOrderFinished && activeAlerts.length > 0;
 
   return (
-    <div className={`flex h-fit w-full shrink-0 flex-col overflow-hidden rounded-tr-4xl rounded-bl-4xl border-2 bg-surface shadow-md transition-all hover:shadow-lg ${hasLateItems ? 'border-danger hover:shadow-danger/50' : 'border-secondary hover:shadow-primary/50'}`}>
+    <div className={`flex h-fit w-full shrink-0 flex-col overflow-hidden rounded-tr-4xl rounded-bl-4xl border-2 transition-all 
+      ${hasLateItems ? 'border-danger hover:shadow-danger/50 shadow-md' : 'border-secondary bg-surface hover:shadow-primary/50 shadow-md'}
+      ${!isChef && isOrderFinished ? 'opacity-60 grayscale bg-neutral/30 border-secondary/30 shadow-none' : ''} 
+    `}>
       
-      {/* Header - Change color if an item is late! */}
+      {/* Header */}
       <div className={`flex flex-col px-6 py-4 border-b-2 rounded-bl-4xl ${hasLateItems ? 'bg-danger/10 border-danger/20' : 'bg-secondary/5 border-secondary/10'}`}>
         <div className="flex items-center justify-between">
           <h2 className={`text-3xl ${hasLateItems ? 'text-danger' : 'text-primary'}`}>
@@ -51,11 +64,10 @@ export const KdsCard = ({
         </div>
       </div>
 
-      {/* Body: Mapped Items */}
-      <div className="flex flex-col p-4 gap-4 bg-surface">
+      {/* Body */}
+      <div className={`flex flex-col p-4 gap-4 ${!isChef && isOrderFinished ? 'bg-transparent' : 'bg-surface'}`}>
         {activeItems.map((item) => {
-          // Check if THIS specific item is in the alerts array
-          const isUrgent = alerts.some((alert) => alert.orderItemId === item.orderItemId);
+          const isUrgent = activeAlerts.some((alert) => alert.orderItemId === item.orderItemId);
 
           return (
             <KdsCardItem
@@ -63,7 +75,7 @@ export const KdsCard = ({
               orderId={order.orderId!}
               item={item}
               isChef={isChef}
-              isUrgent={isUrgent} // Pass urgency to the item!
+              isUrgent={isUrgent}
               onStart={onStart}
               onReady={onReady}
               onComplete={onComplete}

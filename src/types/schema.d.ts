@@ -1110,6 +1110,7 @@ export interface operations {
             query?: {
                 sortBy?: "ESTIMATED_PREP_TIME" | "ORDER_TIME";
                 direction?: "ASC" | "DESC";
+                history?: boolean;
             };
             header?: never;
             path?: never;
