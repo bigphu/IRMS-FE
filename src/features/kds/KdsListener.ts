@@ -1,4 +1,3 @@
-// src/features/kds/KdsListener.ts
 import { useSubscription } from "react-stomp-hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
