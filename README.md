@@ -1,4 +1,4 @@
-# IRMS Frontend 2.0
+# Intelligent Restaurant Management System Frontend
 
 A React + TypeScript frontend for an interactive restaurant order management system. This application is built with Vite and designed to support menu browsing, cart checkout, authentication, and real-time kitchen display synchronization.
 
@@ -114,4 +114,4 @@ npm run lint
 
 ## Notes
 
-This repository is a frontend implementation for a restaurant management system. Backend endpoints and live data support are expected to be provided by a connected service.
+This repository is a frontend implementation for a restaurant management system. Backend endpoints and live data support are provided by another [repository](https://github.com/Hayzen2/IRMS-BE).
